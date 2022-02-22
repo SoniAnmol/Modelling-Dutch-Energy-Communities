@@ -1,4 +1,4 @@
-import numpy as np
+
 from mesa import Model
 from mesa.time import RandomActivation
 
