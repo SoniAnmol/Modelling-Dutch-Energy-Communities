@@ -1,3 +1,9 @@
+---
+layout: default
+title: Thesis Project
+permalink: /Modelling Dutch Energy Communities/
+---
+
 # Modelling Dutch Energy Communities
 
 This is an agent-based simulation model of a Dutch energy community.
