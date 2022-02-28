@@ -3,6 +3,7 @@
 # Modelling Dutch Energy Communities
 
 This is an agent-based simulation model of a Dutch energy community.
+<img src="https://www.ped-interact.eu/wp-content/uploads/2021/05/Energy-Community.png" alt="Illustration of a energy community" style="float: left; width: 50%; margin: 0.5cm">
 
 Contributors:
 
