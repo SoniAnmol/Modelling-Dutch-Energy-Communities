@@ -1,4 +1,4 @@
-[Home](www.sonianmol.com) | [About](www.sonianmol.com/about) | [My projects](www.sonianmol.com/projects)
+[Home](http://www.sonianmol.com) | [About](http://www.sonianmol.com/about) | [My projects](http://www.sonianmol.com/projects)
 
 # Modelling Dutch Energy Communities
 
