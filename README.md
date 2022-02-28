@@ -1,6 +1,7 @@
-# [Home](www.sonianmol.com) | [About](www.sonianmol.com/about) | [My projects](www.sonianmol.com/projects)
 
 # Modelling Dutch Energy Communities
+
+[Home](www.sonianmol.com) | [About](www.sonianmol.com/about) | [My projects](www.sonianmol.com/projects)
 
 This is an agent-based simulation model of a Dutch energy community.
 
