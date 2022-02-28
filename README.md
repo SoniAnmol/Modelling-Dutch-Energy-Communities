@@ -1,8 +1,4 @@
----
-layout: default
-title: Thesis Project
-permalink: /Modelling Dutch Energy Communities/
----
+
 
 # Modelling Dutch Energy Communities
 
