@@ -26,6 +26,10 @@ model is primary focused on electric energy communities and can be extended to o
 to evaluate demand response with in energy communities while ensuring fair distribution of cost and benefits among
 community members.
 
+A thesis committee has been set up to evaluate the model and end results.
+
+<img src="https://drive.google.com/uc?export=view&id=13QUgRgjlESupS_dYM2p8BbChNcll_Zur" alt="Thesis Committee" style="width: 80%; margin: 0.5cm">
+
 ## Current state
 
 This model is currently in development. This is the initial commit of the model.
