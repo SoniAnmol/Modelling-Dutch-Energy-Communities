@@ -114,21 +114,39 @@ class Member(Agent):
     def __init__(self, unique_id, model):
         super().__init__(unique_id, model)
         self.load = 0
-        self.demand_schedule = 0
+        self.tod_compliance = False
+        self.demand_schedule = self.get_demand_schedule()
+        self.demand_realized = self.modify_demand_schedule()
+        self.day_ahead_demand = self.generate_day_ahead_demand()
         self.member_type = MemberType.CONSUMER
         pass
 
     def step(self):
-        # The agent's step will go here.
-        # For demonstration purposes we will print the agent's unique_id
+        self.demand_schedule = self.get_demand_schedule()
+        self.demand_realized = self.modify_demand_schedule()
+        self.day_ahead_demand = self.generate_day_ahead_demand()
         pass
 
+    def get_demand_schedule(self):
+        """This method returns the demand schedule for the member."""
+        demand_schedule = self.generate_day_ahead_demand()
+        return demand_schedule
+
     @staticmethod
-    def generate_demand(mean=50, sigma=10):
-        """Generates a mock demand for an agent for a given day"""
+    def generate_day_ahead_demand(mean=50, sigma=10):
+        """Generates mock day ahead demand for an agent for a given day"""
         size = 24
         demand: np.ndarray | int | float | complex = np.random.normal(mean, sigma, size)
         return demand
+
+    def modify_demand_schedule(self):
+        """Modifies the demand schedule for an agent based on the TOD compliance."""
+        if self.tod_compliance:
+            pass
+        # TODO: Implement the TOD compliance
+        else:
+            realised_demand = self.demand_schedule
+        return realised_demand
 
 
 class Residential(Member):
@@ -139,9 +157,56 @@ class Residential(Member):
         pass
 
     def step(self):
-        self.demand_schedule = self.generate_demand()
-        # print( "Hi, I am residential agent " + str(self.unique_id) + "." + "My daily demand is " + str(self.demand)
-        # + ".")
+        super(Residential, self).step()
+        pass
+
+
+class Commercial(Member):
+    """A member of the residential community."""
+
+    def __init__(self, unique_id, model):
+        super().__init__(unique_id, model)
+        pass
+
+    def step(self):
+        super(Commercial, self).step()
+        pass
+
+
+class Utility(Member):
+    """A member of the residential community."""
+
+    def __init__(self, unique_id, model):
+        super().__init__(unique_id, model)
+        pass
+
+    def step(self):
+        super(Utility, self).step()
+        pass
+
+
+class EVChargingStation(Member):
+    """A member of the residential community."""
+
+    def __init__(self, unique_id, model):
+        super().__init__(unique_id, model)
+        pass
+
+    def step(self):
+        super(EVChargingStation, self).step()
+        pass
+
+
+class School(Member):
+    """A member of the residential community."""
+
+    def __init__(self, unique_id, model):
+        super().__init__(unique_id, model)
+        pass
+
+    def step(self):
+        super(School, self).step()
+        pass
 
 
 class Asset(Agent):
@@ -149,6 +214,7 @@ class Asset(Agent):
 
     def __init__(self, unique_id, model):
         super().__init__(unique_id, model)
+        self.owner = {}
         self.supply_schedule = 0
         self.member_type = MemberType.ASSET
         pass

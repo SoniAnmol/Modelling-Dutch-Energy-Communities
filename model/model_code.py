@@ -16,6 +16,10 @@ class EnergyCommunity(Model):
             self.agent_counts = {
                 Coordinator: 1,
                 Residential: 10,
+                Commercial: 1,
+                Utility: 1,
+                School: 1,
+                EVChargingStation: 1,
                 Solar: 1,
                 Wind: 1
             }
@@ -41,6 +45,14 @@ class EnergyCommunity(Model):
                     agent = Coordinator(0, self)
                 elif agent_type is Residential:
                     agent = Residential(self.next_id(), self)
+                elif agent_type is Commercial:
+                    agent = Commercial(self.next_id(), self)
+                elif agent_type is Utility:
+                    agent = Utility(self.next_id(), self)
+                elif agent_type is School:
+                    agent = School(self.next_id(), self)
+                elif agent_type is EVChargingStation:
+                    agent = EVChargingStation(self.next_id(), self)
                 elif agent_type is Solar:
                     agent = Solar(self.next_id(), self)
                 elif agent_type is Wind:
