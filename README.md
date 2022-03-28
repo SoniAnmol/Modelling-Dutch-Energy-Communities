@@ -37,6 +37,17 @@ TODO
 
 ## Model
 
+This project takes a case study approach for the model. This model is based in Hazeldonk region of Breda in North
+Brabant province of the Netherlands. Municipality of Breda has expressed interest in a community energy project for the
+region for promoting sustainability, energy autonomy and community building. Apart from this, Breda municipality
+also extended support in data collection and connecting with key actors for the project.
+
+The composition of energy community is as follows:
+1. Residential houses: 150 starter apartments in two buildings (75 each).
+2. Schools: 2 School buildings.
+3. Office buildings:
+4. Municipality Bus-EV charging stations/terminal: 1 charging station.
+
 ### Conceptualisation
 
 This is the initial conceptualisation of the model. This project is still in development and the conceptualisation is
