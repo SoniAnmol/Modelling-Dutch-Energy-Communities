@@ -1,5 +1,4 @@
-[Home](https://sonianmol.com/) | [About](https://sonianmol.com/about)
-| [My projects](https://sonianmol.com/my_projects/)
+[Home](https://sonianmol.com/) | [About](https://sonianmol.com/about) | [My projects](https://sonianmol.com/my_projects/)
 
 # Modelling Dutch Energy Communities
 
@@ -62,9 +61,53 @@ This agent is responsible for following tasks in the energy community.
 3. release_tod_schedule
 4. distribute_costs_and_benefits
 
+Assessment of community requirement:
+The model is run for 30 steps (period of 1 month) with existing assets of energy community.
+Based on the results of previous runs, Coordinator will assess the average energy deficit or surplus.
+If energy is deficit, Coordinator will set up a generation asset.
+If energy is surplus, Coordinator will set up a storage asset.
+
+`set_up_generation_asset`:
+If energy is deficit, Coordinator will set up a generation asset.
+Coordinator will determine the size of the asset based on the energy deficit using following formula:
+
+(Daily kWh ÷ average sun hours) x efficiency_factor = solar system size
+The efficiency factor is based on the average efficiency of the solar system.
+
+kWh = 0.01328 x (rotor diameter (feet)))^2 x (average wind speed (mph))^3
+
+Source: NREL
+
+`set_up_storage_asset`:
+If energy is surplus, Coordinator will set up a storage asset. Coordinator will determine the size of the asset based on
+the energy surplus using following formula:
+
+battery size = Daily kWh x (1 + DoD)
+DoD: Depth of Discharge (percentage)
+
+All the batteries in the model have respective depletion factors after each charge discharge cycle. After complete
+depletion, the battery will be replaced and additional cost will be added for the community. Battery in the model is
+designed for one day back-up. This will result in smaller battery size which can be easily replaced after depletion.
+
+Assumptions:
+1. efficiency_factor considered for system size is assumed to be constant across brands and systems.
+2. Average solar peak hours and average wind speed is also assumed to be constant for simplicity.
+
+##### Fair investment opportunities for the energy community members
+
+After finalising the asset type and size, Coordinator will ask interested members to invest in the asset. Not all the
+interested members will be able to invest in the asset and some of them will be left out. This will be done by
+introducing a random opportunity of investment factor. The filtered interested members will be asked to invest in the
+asset. The investment by each member is capped so that commercial parties do not buy the major equity share of the
+asset.
+
+Assumptions: 
+1. Non-residential energy community members are always interested in investing the asset.
+2. Residential member's investment capacity is limited and function of annual household income.
+3. Higher equity share in the community asset will result in higher influence in decision-making.
+
 **`Member`**:
-This agent represents a member of the community. Number of members remains constant during the model run. A `Member` can
-make following actions:
+This agent represents a member of the community. A `Member` can make following actions:
 
 - `invest`: invest in the community asset (e.g. solar panels, storage, etc.) at the start of simulation
 - `comply_tod`: Comply with the time of day schedule released by community coordinator.
@@ -83,6 +126,10 @@ All `Member` have the following attributes:
    1. day_ahead_demand: The demand profile of the member for the next day.
    2. demand_schedule: The demand profile of the member for current day.
    3. demand_realised: The actualised demand profile of the member for current day.
+
+Assumptions:
+1. Number of members remains constant during the model run. 
+2. It is assumed that the demand profile of each member is constant throughout the simulation.
 
 # Data
 

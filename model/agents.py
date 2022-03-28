@@ -73,10 +73,25 @@ class Coordinator(Agent):
 
     def assess_community_requirement(self):
         """This method assesses the community's energy requirement and recommends the appropriate assets.
-        The recommendation could be either a Solar, Wind or storage asset."""
+        The recommendation could be either a generation or storage asset."""
         historical_demand_data = self.get_historical_demand_data()
         historical_supply_data = self.get_historical_supply_data()
-        # TODO: Implement the energy requirement assessment
+        energy_difference = historical_demand_data - historical_supply_data
+        if energy_difference > 0:
+            self.set_up_storage()
+        elif energy_difference < 0:
+            self.set_up_generation()
+        return None
+
+    def set_up_storage(self):
+        """This method sets up the storage assets for the energy community."""
+        # TODO: Implement the storage setup
+        pass
+
+    def set_up_generation(self):
+        """This method sets up the generation assets for the energy community."""
+        # TODO: Implement the generation setup
+        pass
 
     @staticmethod
     def get_historical_demand_data():
@@ -215,7 +230,8 @@ class Asset(Agent):
     def __init__(self, unique_id, model):
         super().__init__(unique_id, model)
         self.owner = {}
-        self.supply_schedule = 0
+        self.supply_schedule = self.generate_supply_schedule()
+        self.supply_realized = self.modify_supply_schedule()
         self.member_type = MemberType.ASSET
         pass
 
@@ -234,6 +250,10 @@ class Asset(Agent):
         supply_schedule: np.ndarray | int | float | complex = np.random.normal(mean, sigma, size)
         return supply_schedule
 
+    def modify_supply_schedule(self):
+        """Modifies the supply schedule for an asset based on the TOD compliance."""
+        # TODO: Implement the weather dependence
+        return self.supply_schedule
 
 class Solar(Asset):
     """A solar asset of the energy community."""

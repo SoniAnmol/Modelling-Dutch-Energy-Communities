@@ -4,7 +4,7 @@ from mesa import Model
 from mesa.datacollection import DataCollector
 from mesa.time import RandomActivation
 
-from model.agents import *
+from model.data_reporters import *
 
 
 class EnergyCommunity(Model):
@@ -28,7 +28,11 @@ class EnergyCommunity(Model):
         self.schedule = RandomActivation(self)
         self.all_agents = self.create_agents()
         self.datacollector = DataCollector(model_reporters={
-            "energy costs": self.get_energy_expenses})
+            "energy costs": get_energy_expenses,
+            "avg agent demand": get_average_demand,
+            "total agent demand": get_total_demand,
+            "total generation": get_total_supply,
+            "avg generation": get_average_supply})
 
     def step(self):
         """Advance the model by one step."""
@@ -63,10 +67,6 @@ class EnergyCommunity(Model):
                 else:
                     all_agents[agent_type] = [agent]
         return all_agents
-
-    def get_energy_expenses(self):
-        """Returns the current energy prices."""
-        return self.all_agents[Coordinator][0].energy_cost
 
     def run_simulation(self, steps=1, time_tracking=False, debug=False):
         """
