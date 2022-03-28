@@ -1,4 +1,4 @@
-[Home](https://sonianmol.com/) | [About](https://sonianmol.com/about) | [My projects](https://sonianmol.com/my_projects/)
+[Home](https://sonianmol.com/)
 
 # Modelling Dutch Energy Communities
 
@@ -26,10 +26,6 @@ This project is a thesis project done in collaboration with [Croonwolter&Dros](h
 model is primary focused on electric energy communities and can be extended to other energy sources. The model is used
 to evaluate demand response with in energy communities while ensuring fair distribution of cost and benefits among
 community members.
-
-A thesis committee has been set up to evaluate the model and end results.
-
-<img src="https://drive.google.com/uc?export=view&id=1vacWxsx2M5plE96QXIcEscDwYRqNsp0t" alt="Thesis Committee" style="width: 80%; margin: 0.5cm">
 
 ## Current state
 
@@ -132,6 +128,27 @@ Assumptions:
 2. It is assumed that the demand profile of each member is constant throughout the simulation.
 
 # Data
+
+This model uses following data:
+
+1. Weather data: Weather data provided by Royal Netherlands Meteorological Institute [KNMI](https://www.knmi.nl/home) is
+   used to get the hourly weather data for the simulation. This data is used to get the solar irradiance, wind speed,
+   and temperature for simulating the generation form Solar PV and wind turbines. Data for the year 2021 is used for
+   this model.
+2. Electricity consumption data for non-residential buildings: Electricity consumption data for non-residential
+   buildings is provided by the Croonwolter&dros (https://www.croonwolterendros.nl/en/). This data is collected for four
+   office buildings and a school in the Netherlands. This data is used to infer the electricity consumption of offices
+   and schools in the modelled community energy project.
+3. Electricity consumption data for residential buildings: 
+4. 
+
+### Data Cleaning
+The data collected from the respective sources is cleaned and checked for completeness. After cleaning, data is assessed
+for semantic and syntactic correctness. Missing data is substituted with the nearest available data for minor data lapses.
+Whereas, for major data lapses, average consumption data of the month for weekday or weekend is used respectively.
+
+### Data preparation
+After cleaning, data is prepared for modelling.
 
 TODO
 
