@@ -15,10 +15,10 @@ class EnergyCommunity(Model):
         if agent_counts is None:
             self.agent_counts = {
                 Coordinator: 1,
-                Residential: 10,
+                Residential: 150,
                 Commercial: 1,
                 Utility: 1,
-                School: 1,
+                School: 2,
                 EVChargingStation: 1,
                 Solar: 1,
                 Wind: 1

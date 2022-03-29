@@ -12,5 +12,5 @@ agent_counts = {
             }
 
 model = EnergyCommunity(agent_counts=agent_counts)
-results = model.run_simulation(steps=30)
+results = model.run_simulation(steps=365)
 results.to_csv('../results/simulation_results.csv', index=False)

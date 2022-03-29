@@ -37,16 +37,50 @@ TODO
 
 ## Model
 
-This project takes a case study approach for the model. This model is based in Hazeldonk region of Breda in North
-Brabant province of the Netherlands. Municipality of Breda has expressed interest in a community energy project for the
-region for promoting sustainability, energy autonomy and community building. Apart from this, Breda municipality
-also extended support in data collection and connecting with key actors for the project.
+This project takes a case study approach for the model.
+The municipality of Breda, the province of North Brabant and Enexis (DSO)
+share a vision for the future energy systems (electricity, heat, storage and conversion) for the region.
+They want to consider Hazeldonk, a small business area in Breda as a pilot project.
+In addition to this, an EV-bus depot is planned in the area which will be used for the docking and charging of 
+electric buses.
+Thus, the municipality of Breda is looking for a community energy project in Hazeldonk with active participation
+from actors for the development of their energy system in this area aligned with that of others.
 
 The composition of energy community is as follows:
 1. Residential houses: 150 starter apartments in two buildings (75 each).
 2. Schools: 2 School buildings.
 3. Office buildings:
 4. Municipality Bus-EV charging stations/terminal: 1 charging station.
+
+Following is the power interest matrix of the stakeholders involved in the project:
+<br>
+<img src="images/Thesis%20-%20Stakeholder%20matrix.jpg" alt="power-interest-matrix" style=" width: 80%; margin: 0.5cm">
+<br>
+
+The stakeholders shown above are arranged based on their interest and power to influence the decision regarding
+community energy projects. The grid shown above represents the decision arena for the project.
+The four grids in the decision arena are:
+
+**Defenders**:
+The defenders are the actors with highest power in the decision arena but also with the lowest interest in the project.
+The province of North Brabant is the most powerful actor as it possesses the governing power.
+However, this project is not the highest priority for the province, and they have a relatively neutral interest level.
+
+**Promoters**:
+Promoters are the project propagators with the highest interest and power in the decision arena.
+The municipality of Breda is the second most powerful actor and has high interest in the project as they have issued
+the expression of interest. Enexis, the DSO of the area has decision-making power as they own the distribution assets,
+and they also have relatively high interest in the project.
+
+**Latents**:
+Latents are the actors with low decision-making power and high interest levels. Both housing cooperation and School
+(Curio) are interested in the project for reducing the energy costs and contributing sustainability of the
+neighbourhood.
+
+**Apathetic**: 
+Apathetic are the actors with low decision-making power and low interest levels. Residents of the rented apartments,
+existing businesses and scouting are relatively less interested in the project and have low decision-making power as
+they are not involved in the project yet.
 
 ### Conceptualisation
 
