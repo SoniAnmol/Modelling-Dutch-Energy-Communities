@@ -2,10 +2,17 @@
 This module contains all agent classes.
 """
 
+import datetime
+
 import numpy as np
+import pandas as pd
 from mesa import Agent
 
 from model.enumerations import *
+
+# Read the model input data
+df = pd.read_csv("../data/processed/model_input_data.csv", parse_dates=['Local'], infer_datetime_format=True,
+                 index_col=0)
 
 
 class Coordinator(Agent):
@@ -18,9 +25,13 @@ class Coordinator(Agent):
         self.day_ahead_supply = 0
         self.energy_deficit = 0
         self.energy_cost = 0
+        start_date = datetime.datetime(2021, 1, 1)
+        self.date = start_date
+        self.tick = 0
         pass
 
     def step(self):
+        self.date = self.tick_to_date(self.tick + 1)
         self.calculate_energy_deficit()
         self.energy_cost = self.get_energy_prices()
         self.release_tod_schedule()
@@ -71,16 +82,17 @@ class Coordinator(Agent):
         # TODO: Implement the energy community setup
         pass
 
-    def assess_community_requirement(self):
+    @staticmethod
+    def assess_community_requirement():
         """This method assesses the community's energy requirement and recommends the appropriate assets.
         The recommendation could be either a generation or storage asset."""
-        historical_demand_data = self.get_historical_demand_data()
-        historical_supply_data = self.get_historical_supply_data()
-        energy_difference = historical_demand_data - historical_supply_data
-        if energy_difference > 0:
-            self.set_up_storage()
-        elif energy_difference < 0:
-            self.set_up_generation()
+        # historical_demand_data = self.get_historical_demand_data()
+        # historical_supply_data = self.get_historical_supply_data()
+        # energy_difference = historical_demand_data - historical_supply_data
+        # if energy_difference > 0:
+        #     self.set_up_storage()
+        # elif energy_difference < 0:
+        #     self.set_up_generation()
         return None
 
     def set_up_storage(self):
@@ -122,21 +134,40 @@ class Coordinator(Agent):
         # TODO: Implement the revenue distribution
         pass
 
+    @staticmethod
+    def tick_to_date(tick):
+        """
+        Converts a tick to a date
+        :param tick: int: tick number
+        :return:
+            date: string: date in format "YYYY-MM-DD"
+        """
+        year = 2021
+        days = tick
+        date = datetime.datetime(year, 1, 1) + datetime.timedelta(days - 1)
+        date = date.strftime('%Y-%m-%d')
+        return date
+
 
 class Member(Agent):
     """An agent with fixed initial wealth."""
 
     def __init__(self, unique_id, model):
         super().__init__(unique_id, model)
+        start_date = datetime.datetime(2021, 1, 1)
+        self.date = start_date.strftime('%Y-%m-%d')
+        self.tick = 0
         self.load = 0
         self.tod_compliance = False
         self.demand_schedule = self.get_demand_schedule()
         self.demand_realized = self.modify_demand_schedule()
         self.day_ahead_demand = self.generate_day_ahead_demand()
         self.member_type = MemberType.CONSUMER
+
         pass
 
     def step(self):
+        self.date = self.tick_to_date(self.tick + 1)
         self.demand_schedule = self.get_demand_schedule()
         self.demand_realized = self.modify_demand_schedule()
         self.day_ahead_demand = self.generate_day_ahead_demand()
@@ -150,7 +181,7 @@ class Member(Agent):
     @staticmethod
     def generate_day_ahead_demand(mean=50, sigma=10):
         """Generates mock day ahead demand for an agent for a given day"""
-        size = 24
+        size = 96
         demand: np.ndarray | int | float | complex = np.random.normal(mean, sigma, size)
         return demand
 
@@ -162,6 +193,20 @@ class Member(Agent):
         else:
             realised_demand = self.demand_schedule
         return realised_demand
+
+    @staticmethod
+    def tick_to_date(tick):
+        """
+        Converts a tick to a date
+        :param tick: int: tick number
+        :return:
+            date: string: date in format "YYYY-MM-DD"
+        """
+        year = 2021
+        days = tick
+        date = datetime.datetime(year, 1, 1) + datetime.timedelta(days - 1)
+        date = date.strftime('%Y-%m-%d')
+        return date
 
 
 class Residential(Member):
@@ -188,7 +233,7 @@ class Commercial(Member):
         pass
 
 
-class Utility(Member):
+class Curio(Member):
     """A member of the residential community."""
 
     def __init__(self, unique_id, model):
@@ -196,8 +241,13 @@ class Utility(Member):
         pass
 
     def step(self):
-        super(Utility, self).step()
+        super(Curio, self).step()
         pass
+
+    def get_demand_schedule(self):
+        """This method returns the demand schedule for the member."""
+        demand_schedule = df.loc[self.date, 'Curio_consumption']
+        return demand_schedule
 
 
 class EVChargingStation(Member):
@@ -212,7 +262,7 @@ class EVChargingStation(Member):
         pass
 
 
-class School(Member):
+class Sligro(Member):
     """A member of the residential community."""
 
     def __init__(self, unique_id, model):
@@ -220,8 +270,30 @@ class School(Member):
         pass
 
     def step(self):
-        super(School, self).step()
+        super(Sligro, self).step()
         pass
+
+    def get_demand_schedule(self):
+        """This method returns the demand schedule for the member."""
+        demand_schedule = df.loc[self.date, 'Sligro_consumption']
+        return demand_schedule
+
+
+class KoningDrinks(Member):
+    """A member of the residential community."""
+
+    def __init__(self, unique_id, model):
+        super().__init__(unique_id, model)
+        pass
+
+    def step(self):
+        super(KoningDrinks, self).step()
+        pass
+
+    def get_demand_schedule(self):
+        """This method returns the demand schedule for the member."""
+        demand_schedule = df.loc[self.date, 'Koning_Drinks_consumption']
+        return demand_schedule
 
 
 class Asset(Agent):
@@ -229,40 +301,63 @@ class Asset(Agent):
 
     def __init__(self, unique_id, model):
         super().__init__(unique_id, model)
-        self.owner = {}
-        self.supply_schedule = self.generate_supply_schedule()
-        self.supply_realized = self.modify_supply_schedule()
+        start_date = datetime.datetime(2021, 1, 1)
+        self.date = start_date.strftime('%Y-%m-%d')
+        self.tick = 0
         self.member_type = MemberType.ASSET
+
         pass
 
     def step(self):
-        # The agent's step will go here.
-        # For demonstration purposes we will print the agent's unique_id
-        self.supply_schedule = self.generate_supply_schedule()
+        self.date = self.tick_to_date(self.tick + 1)
         # print(
         #     "Hi, I am" + str(self.member_type) + "asset ." + "My unique ID is " + str(self.unique_id) + ".")
         pass
 
     @staticmethod
-    def generate_supply_schedule(mean=10, sigma=10):
-        """Generates a mock supply schedule for an asset for a given day"""
-        size = 24
-        supply_schedule: np.ndarray | int | float | complex = np.random.normal(mean, sigma, size)
-        return supply_schedule
+    def tick_to_date(tick):
+        """
+        Converts a tick to a date
+        :param tick: int: tick number
+        :return:
+            date: string: date in format "YYYY-MM-DD"
+        """
+        year = 2021
+        days = tick
+        date = datetime.datetime(year, 1, 1) + datetime.timedelta(days - 1)
+        date = date.strftime('%Y-%m-%d')
+        return date
 
-    def modify_supply_schedule(self):
-        """Modifies the supply schedule for an asset based on the TOD compliance."""
-        # TODO: Implement the weather dependence
-        return self.supply_schedule
 
 class Solar(Asset):
     """A solar asset of the energy community."""
 
-    def __init__(self, unique_id, model):
+    def __init__(self, unique_id, model, capacity=0, price=0, efficiency=0, owner=None):
         super().__init__(unique_id, model)
+        self.owner = owner
+        self.price = price
+        self.efficiency = efficiency
+        self.capacity = capacity
         self.member_type = MemberType.ASSET
         self.asset_type = AssetType.SOLAR
+        self.supply_schedule = self.generate_supply_schedule()
+        self.supply_realized = self.supply_schedule
         pass
+
+    def generate_supply_schedule(self):
+        """ Generates a schedule for the solar asset based on the capacity and efficiency of the solar panel"""
+        supply_schedule = self.capacity * self.efficiency * df.loc[self.date, 'Direct [W/m^2]'] / 1000
+        return supply_schedule
+
+    def step(self):
+        super(Solar, self).step()
+        self.supply_schedule = self.generate_supply_schedule()
+
+    @staticmethod
+    def modify_supply_schedule(self):
+        """Modifies the supply schedule for an asset based on the TOD compliance."""
+        # TODO: Implement the weather dependence
+        return self.supply_schedule
 
 
 class Wind(Asset):
@@ -272,4 +367,13 @@ class Wind(Asset):
         super().__init__(unique_id, model)
         self.member_type = MemberType.ASSET
         self.asset_type = AssetType.WIND
+        self.supply_schedule = self.generate_supply_schedule()
+        self.supply_realized = self.supply_schedule
         pass
+
+    @staticmethod
+    def generate_supply_schedule(mean=10, sigma=10):
+        """Generates a mock supply schedule for an asset for a given day"""
+        size = 96
+        supply_schedule: np.ndarray | int | float | complex = np.random.normal(mean, sigma, size)
+        return supply_schedule

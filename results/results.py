@@ -4,7 +4,6 @@ import json
 import warnings
 
 import matplotlib.pyplot as plt
-import pandas as pd
 
 from model.agents import *
 
@@ -17,12 +16,13 @@ def extract_results(data, column, agent_list):
     :type column: str
     :type agent_list: list
     """
-    df = pd.DataFrame(columns=[i for i in np.arange(1, 25)] + ['agent_type'])
+    columns = pd.date_range(start='2021/01/01', periods=96, freq='15min').strftime('%H:%M:%S').to_list()
+    df = pd.DataFrame(columns=columns + ['agent_type'])
     agent_name_dict = get_agent_name_dict(agent_list)
     for agent_type in agent_list:
         for index, row in data.iterrows():
             item = json.loads(row[column])[str(agent_type)]
-            a_series = pd.Series(item, index=[i for i in np.arange(1, 25)])
+            a_series = pd.Series(item, index=columns)
             a_type = pd.Series([agent_name_dict[agent_type]], index=['agent_type'])
             a_series = pd.concat([a_series, a_type], axis=0)
         df = df.append(a_series, ignore_index=True)
@@ -35,7 +35,7 @@ def format_df(df):
     header_row = -1
     df.columns = df.iloc[header_row]
     df = df.iloc[:-1, :]
-    df = df.reset_index(drop=True)
+    # df = df.reset_index(drop=True)
     return df
 
 

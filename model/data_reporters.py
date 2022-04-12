@@ -15,10 +15,10 @@ def get_average_demand(self):
     Returns the average daily realised energy demand for every agent type.
     :return: Dict: average energy demand per agent type
     """
-    agent_list = [Residential, Commercial, Utility, School, EVChargingStation]
+    agent_list = [Residential, Commercial, Curio, Sligro, EVChargingStation]
     demand_dict = {}
     for agent_type in agent_list:
-        demand_array = np.arange(0, 24)
+        demand_array = np.arange(0, 96)
         for agent in self.all_agents[agent_type]:
             demand = agent.demand_realized
             demand_array = np.c_[demand_array, demand]
@@ -33,10 +33,10 @@ def get_total_demand(self):
     Returns the total daily realised energy demand for every agent type.
     :return: Dict: total energy demand per agent type
     """
-    agent_list = [Residential, Commercial, Utility, School, EVChargingStation]
+    agent_list = [Residential, Commercial, Curio, Sligro, EVChargingStation]
     demand_dict = {}
     for agent_type in agent_list:
-        demand_array = np.arange(0, 24)
+        demand_array = np.arange(0, 96)
         for agent in self.all_agents[agent_type]:
             demand = agent.demand_realized
             demand_array = np.c_[demand_array, demand]
@@ -54,7 +54,7 @@ def get_average_supply(self):
     generator_list = [Solar, Wind]
     supply_dict = {}
     for generator in generator_list:
-        supply_array = np.arange(0, 24)
+        supply_array = np.arange(0, 96)
         for agent in self.all_agents[generator]:
             supply = agent.supply_realized
             supply_array = np.c_[supply_array, supply]
@@ -72,7 +72,7 @@ def get_total_supply(self):
     generator_list = [Solar, Wind]
     supply_dict = {}
     for generator in generator_list:
-        supply_array = np.arange(0, 24)
+        supply_array = np.arange(0, 96)
         for agent in self.all_agents[generator]:
             supply = agent.supply_realized
             supply_array = np.c_[supply_array, supply]

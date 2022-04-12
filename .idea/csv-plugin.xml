@@ -17,6 +17,20 @@
             </Attribute>
           </value>
         </entry>
+        <entry key="/data/raw/GIS/GIS/Data/POI-Enexis/poielektra/E_station.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/data/raw/GIS/GIS/Data/POI-Enexis/poigas/Gasstation.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
         <entry key="/results/simulation_results.csv">
           <value>
             <Attribute>

@@ -1,3 +1,4 @@
+# import datetime
 import time
 
 from mesa import Model
@@ -10,18 +11,24 @@ from model.data_reporters import *
 class EnergyCommunity(Model):
     """A model with some number of agents."""
 
+    date = None
+
     def __init__(self, agent_counts=None):
         super().__init__()
+        # start_date = datetime.datetime(2021, 1, 1)
+        # self.date = start_date.strftime('%Y-%m-%d')
+        # self.date = start_date
         if agent_counts is None:
             self.agent_counts = {
                 Coordinator: 1,
                 Residential: 150,
                 Commercial: 1,
-                Utility: 1,
-                School: 2,
+                Curio: 1,
+                Sligro: 1,
+                KoningDrinks: 1,
                 EVChargingStation: 1,
                 Solar: 1,
-                Wind: 1
+                Wind: 0
             }
         else:
             self.agent_counts = agent_counts
@@ -33,6 +40,7 @@ class EnergyCommunity(Model):
             "total agent demand": get_total_demand,
             "total generation": get_total_supply,
             "avg generation": get_average_supply})
+        # self.date = tick_to_date(self.tick)
 
     def step(self):
         """Advance the model by one step."""
@@ -51,14 +59,17 @@ class EnergyCommunity(Model):
                     agent = Residential(self.next_id(), self)
                 elif agent_type is Commercial:
                     agent = Commercial(self.next_id(), self)
-                elif agent_type is Utility:
-                    agent = Utility(self.next_id(), self)
-                elif agent_type is School:
-                    agent = School(self.next_id(), self)
+                elif agent_type is Curio:
+                    agent = Curio(self.next_id(), self)
+                elif agent_type is Sligro:
+                    agent = Sligro(self.next_id(), self)
+                elif agent_type is KoningDrinks:
+                    agent = KoningDrinks(self.next_id(), self)
                 elif agent_type is EVChargingStation:
                     agent = EVChargingStation(self.next_id(), self)
                 elif agent_type is Solar:
-                    agent = Solar(self.next_id(), self)
+                    agent = Solar(self.next_id(), self, capacity=960, efficiency=0.20, price=0.15,
+                                  owner=KoningDrinks)
                 elif agent_type is Wind:
                     agent = Wind(self.next_id(), self)
                 self.schedule.add(agent)
@@ -80,9 +91,10 @@ class EnergyCommunity(Model):
 
         start_time = time.time()
 
-        for _ in range(steps):
+        for tick in range(steps):
             if debug:
-                print(f'Step: {_}')
+                print(f'Step: {tick}')
+            # self.date = self.tick_to_date(tick + 1)
             self.step()
 
         if time_tracking:
@@ -93,3 +105,17 @@ class EnergyCommunity(Model):
 
         results = self.datacollector.get_model_vars_dataframe()
         return results
+
+    # @staticmethod
+    # def tick_to_date(tick):
+    #     """
+    #     Converts a tick to a date
+    #     :param tick: int: tick number
+    #     :return:
+    #         date: string: date in format "YYYY-MM-DD"
+    #     """
+    #     year = 2021
+    #     days = tick
+    #     date = datetime.datetime(year, 1, 1) + datetime.timedelta(days - 1)
+    #     date = date.strftime('%Y-%m-%d')
+    #     return date
