@@ -31,6 +31,19 @@ community members.
 
 This model is currently in development. This is the initial commit of the model.
 
+### TODOs
+* [x] Set up the model
+* [x] Set up the data
+* [x] Set up the agents
+* [x] Set up the simulation
+* [x] Set up the assets
+* [x] Set up the data collectors
+* [ ] Implement energy cost calculation for each agent
+* [ ] Implement energy cost calculation for each community
+* [ ] Implement ToD schedule by community coordinator
+* [ ] Implement KPI: Cost reduction through demand response
+* [ ] Create archetypes for community configurations
+
 ## Introduction
 
 TODO
