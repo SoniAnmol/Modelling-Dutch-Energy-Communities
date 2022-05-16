@@ -143,9 +143,9 @@ asset. The investment by each member is capped so that commercial parties do not
 asset.
 
 Assumptions: 
-1. Non-residential energy community members are always interested in investing the asset.
-2. Residential member's investment capacity is limited and function of annual household income.
-3. Higher equity share in the community asset will result in higher influence in decision-making.
+~~1. Non-residential energy community members are always interested in investing the asset.~~
+~~2. Residential member's investment capacity is limited and function of annual household income.~~
+~~3. Higher equity share in the community asset will result in higher influence in decision-making.~~
 
 **`Member`**:
 This agent represents a member of the community. A `Member` can make following actions:
@@ -170,7 +170,7 @@ All `Member` have the following attributes:
 
 Assumptions:
 1. Number of members remains constant during the model run. 
-2. It is assumed that the demand profile of each member is constant throughout the simulation.
+2. It is assumed that the Prosumers first use captive generation for self consumption and share excess energy only.
 
 # Data
 

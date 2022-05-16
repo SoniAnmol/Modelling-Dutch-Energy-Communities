@@ -3,7 +3,7 @@ from enum import Enum
 
 class MemberType(Enum):
     """
-    Type of community member.
+    Type of community member_name.
     """
     CONSUMER = 1
     PROSUMER = 2
