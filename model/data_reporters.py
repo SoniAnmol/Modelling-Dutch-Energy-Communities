@@ -15,17 +15,7 @@ def get_average_demand(self):
     Returns the average daily realised energy demand for every agent type.
     :return: Dict: average energy demand per agent type
     """
-    agent_list = [Residential, NonResidential, EVChargingStation]
-    demand_dict = {}
-    for agent_type in agent_list:
-        demand_array = np.arange(0, 96)
-        for agent in self.all_agents[agent_type]:
-            demand = agent.demand_realized
-            demand_array = np.c_[demand_array, demand]
-        demand = demand_array[:, 1:].mean(axis=1)
-        demand = demand.tolist()
-        demand_dict[str(agent_type)] = demand
-    return json.dumps(demand_dict)
+    return None
 
 
 def get_total_demand(self):
@@ -33,17 +23,17 @@ def get_total_demand(self):
     Returns the total daily realised energy demand for every agent type.
     :return: Dict: total energy demand per agent type
     """
-    agent_list = [Residential, NonResidential, EVChargingStation]
-    demand_dict = {}
-    for agent_type in agent_list:
-        demand_array = np.arange(0, 96)
-        for agent in self.all_agents[agent_type]:
-            demand = agent.demand_realized
-            demand_array = np.c_[demand_array, demand]
-        demand = demand_array[:, 1:].sum(axis=1)
-        demand = demand.tolist()
-        demand_dict[str(agent_type)] = demand
-    return json.dumps(demand_dict)
+    # agent_list = [Residential, NonResidential, EVChargingStation]
+    # demand_dict = {}
+    # for agent_type in agent_list:
+    #     demand_array = np.arange(0, 96)
+    #     for agent in self.all_agents[agent_type]:
+    #         demand = agent.demand_realized
+    #         demand_array = np.c_[demand_array, demand]
+    #     demand = demand_array[:, 1:].sum(axis=1)
+    #     demand = demand.tolist()
+    #     demand_dict[str(agent_type)] = demand
+    return None
 
 
 def get_average_supply(self):

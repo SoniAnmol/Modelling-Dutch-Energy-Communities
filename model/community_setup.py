@@ -14,12 +14,14 @@ def generate_agent_list():
         residential_agents.append({'member_name': random.choice(hh_type),
                                    'agent_type': Residential,
                                    'member_type': MemberType.CONSUMER,
+                                   'demand_flexibility': 0.01,
                                    'asset_list': None})
 
     # Setup non-residential agents
     non_residential_agents = [{'agent_type': NonResidential,
                                'member_name': 'drink_packaging_sme',
                                'member_type': MemberType.PROSUMER,
+                               'demand_flexibility': 0.01,
                                'asset_list': [
                                    {'agent_type': Asset,
                                     'asset_type': Solar,
@@ -29,6 +31,7 @@ def generate_agent_list():
                               {'agent_type': NonResidential,
                                'member_name': 'food_packaging_sme',
                                'member_type': MemberType.PROSUMER,
+                               'demand_flexibility': 0.01,
                                'asset_list': [
                                    {'agent_type': Asset,
                                     'asset_type': Solar,
@@ -38,10 +41,12 @@ def generate_agent_list():
                               {'agent_type': NonResidential,
                                'member_name': 'school_mbo',
                                'member_type': MemberType.CONSUMER,
+                               'demand_flexibility': 0.01,
                                'asset_list': None},
                               {'agent_type': EVChargingStation,
                                'member_name': 'EV_bus_charging_station',
                                'member_type': MemberType.CONSUMER,
+                               'demand_flexibility': 0.01,
                                'asset_list': None}]
 
     # Combine residential and non-residential agents

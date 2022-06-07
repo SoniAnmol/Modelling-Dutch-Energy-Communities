@@ -31,18 +31,23 @@ community members.
 
 This model is currently in development. This is the initial commit of the model.
 
-### TODOs
+### TODOs for mid-term
 * [x] Set up the model
 * [x] Set up the data
 * [x] Set up the agents
 * [x] Set up the simulation
 * [x] Set up the assets
 * [x] Set up the data collectors
-* [ ] Implement energy cost calculation for each agent
-* [ ] Implement energy cost calculation for each community
-* [ ] Implement ToD schedule by community coordinator
-* [ ] Implement KPI: Cost reduction through demand response
+* [x] Implement energy cost calculation for each agent
+* [x] Implement ToD schedule by community coordinator
+* [ ] Implement buying energy from grid
+* [ ] Implement selling energy to grid
+* [ ] Implement energy cost calculation for grid
+
+### TODOs post-mid-term
+
 * [ ] Create archetypes for community configurations
+* [ ] Implement energy storage/battery
 
 ## Introduction
 
@@ -136,7 +141,7 @@ Source: NREL
 If energy is surplus, Coordinator will set up a storage asset. Coordinator will determine the size of the asset based on
 the energy surplus using following formula:
 
-battery size = Daily kWh x (1 + DoD)
+battery size = Daily kWh x (1 + DoD)ss
 DoD: Depth of Discharge (percentage)
 
 All the batteries in the model have respective depletion factors after each charge discharge cycle. After complete
@@ -198,7 +203,8 @@ This model uses following data:
    office buildings and a school in the Netherlands. This data is used to infer the electricity consumption of offices
    and schools in the modelled community energy project.
 3. Electricity consumption data for residential buildings: 
-4. 
+4. Electricity pricing from cbs https://www.cbs.nl/en-gb/figures/detail/84672ENG
+5. Capex costing of solar 1.39/Wp http://spinlab.vu.nl/wp-content/uploads/2016/09/Economic_Feasibility_of_roof_top_solar_panels_in_Amsterdam-Michel_Paardekooper.pdf
 
 ### Data Cleaning
 The data collected from the respective sources is cleaned and checked for completeness. After cleaning, data is assessed
