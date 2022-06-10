@@ -31,21 +31,7 @@ community members.
 
 This model is currently in development. This document will be updated shortly.
 
-### TODOs for mid-term
-* [x] Set up the model
-* [x] Set up the data
-* [x] Set up the agents
-* [x] Set up the simulation
-* [x] Set up the assets
-* [x] Set up the data collectors
-* [x] Implement energy cost calculation for each agent
-* [x] Implement ToD schedule by community coordinator
-* [ ] Implement buying energy from grid
-* [ ] Implement selling energy to grid
-* [ ] Implement energy cost calculation for grid
-
-### TODOs post-mid-term
-
+### TODOs 
 * [ ] Create archetypes for community configurations
 * [ ] Implement energy storage/battery
 
