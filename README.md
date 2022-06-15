@@ -37,6 +37,10 @@ This model is currently in development. This document will be updated shortly.
 
 <img src="images/Model-XLRM.png" alt="xlrm_diagram">
 
+### System Relationship
+
+<img src="images/Model-System-relationships.png">
+
 ### TODOs
 
 * [ ] Create archetypes for community configurations
