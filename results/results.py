@@ -2,8 +2,11 @@
 
 import json
 import warnings
+import re
+import ast
 
 import matplotlib.pyplot as plt
+import pandas as pd
 
 from model.agents import *
 
@@ -61,3 +64,29 @@ def plot_results(df, stacked=True, kind='bar', plt_title=''):
     plt.ylabel('kWh')
     plt.title(plt_title.upper())
     plt.tight_layout()
+
+
+def extract_df_from_json(results, column='savings'):
+    """
+    Extract the data from result files
+    :param results: DataFrame returned by the model
+    :param column: Name of column for extracting the DataFrame
+    :return: DataFrame with agents and value of matrix for each timestep
+    """
+    df = pd.DataFrame()
+    for index, row in results.iterrows():
+        try:
+            json.loads(row[column])
+        except ValueError:
+            item = row[column]
+            item = ast.literal_eval(re.search('({.+})', item).group(0))
+        else:
+            item = json.loads(row[column])
+
+        df = df.append(item, ignore_index=True)
+    df = df[1:]
+    df['date'] = results['date']
+    df = df.set_index('date')
+    return df
+
+

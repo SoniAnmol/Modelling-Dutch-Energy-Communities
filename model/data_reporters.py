@@ -5,68 +5,94 @@ import json
 from model.agents import *
 
 
-def get_energy_expenses(self):
-    """Returns the current energy prices."""
-    return None
-
-
-def get_average_demand(self):
-    """
-    Returns the average daily realised energy demand for every agent type.
-    :return: Dict: average energy demand per agent type
-    """
-    return None
-
-
-def get_total_demand(self):
+def get_realised_demand(self):
     """
     Returns the total daily realised energy demand for every agent type.
     :return: Dict: total energy demand per agent type
     """
-    # agent_list = [Residential, NonResidential, EVChargingStation]
-    # demand_dict = {}
-    # for agent_type in agent_list:
-    #     demand_array = np.arange(0, 96)
-    #     for agent in self.all_agents[agent_type]:
-    #         demand = agent.demand_realized
-    #         demand_array = np.c_[demand_array, demand]
-    #     demand = demand_array[:, 1:].sum(axis=1)
-    #     demand = demand.tolist()
-    #     demand_dict[str(agent_type)] = demand
-    return None
+    members = [AgentType.CONSUMER, AgentType.PROSUMER]
+    demand_dict = {}
+    for agent in self.schedule.agents:
+        if agent.agent_type in members:
+            key = str(agent.member_name) + str('_') + str(agent.unique_id)
+            demand_dict[key] = agent.realised_demand.sum()
+    return demand_dict
 
 
-def get_average_supply(self):
+def get_scheduled_demand(self):
     """
-    Returns the average daily realised energy supply of assets by generator type.
-    :return: a dict of average energy supply per generator type
+    Returns scheduled demand for each community member
+    :param self:
+    :return:
     """
-    generator_list = [Solar]
-    supply_dict = {}
-    for generator in generator_list:
-        supply_array = np.arange(0, 96)
-        for asset in self.all_assets[generator]:
-            supply = asset.supply_schedule
-            supply_array = np.c_[supply_array, supply]
-        supply = supply_array[:, 1:].mean(axis=1)
-        supply = supply.tolist()
-        supply_dict[str(generator)] = supply
-    return json.dumps(supply_dict)
+    members = [AgentType.CONSUMER, AgentType.PROSUMER]
+    demand_dict = {}
+    for agent in self.schedule.agents:
+        if agent.agent_type in members:
+            key = str(agent.member_name) + str('_') + str(agent.unique_id)
+            demand_dict[key] = agent.scheduled_demand.sum(min_count=1)
+    return demand_dict
 
 
-def get_total_supply(self):
+def get_shifted_load(self):
+    """"
+    Returns the demand shifted by the community members participating in the demand response.
+    """
+    members = [AgentType.CONSUMER, AgentType.PROSUMER]
+    shifted_load = {}
+    for agent in self.schedule.agents:
+        if agent.agent_type in members:
+            key = str(agent.member_name) + str('_') + str(agent.unique_id)
+            shifted_load[key] = agent.shifted_load
+    return json.dumps(shifted_load)
+
+
+def get_generation(self):
     """
     Returns the total daily realised energy supply of assets by generator type.
     :return: a dict of total energy supply per generator type
     """
-    generator_list = [Solar]
-    supply_dict = {}
-    for generator in generator_list:
-        supply_array = np.arange(0, 96)
-        for asset in self.all_assets[generator]:
-            supply = asset.supply_schedule
-            supply_array = np.c_[supply_array, supply]
-        supply = supply_array[:, 1:].sum(axis=1)
-        supply = supply.tolist()
-        supply_dict[str(generator)] = supply
-    return json.dumps(supply_dict)
+    generation_dict = {}
+    for asset_category in self.all_assets.keys():
+        supply = 0
+        for asset in self.all_assets[asset_category]:
+            supply += asset.supply_schedule.sum()
+        generation_dict[str(asset_category)] = supply
+    return json.dumps(generation_dict)
+
+
+def get_savings(self):
+    """
+    Returns savings made by community member by complying to ToD schedule as a part of demand response.
+    :param self: a dict of savings on energy cost through ToD compliance per timestep
+    :return:
+    """
+    savings_dict = {}
+    members = [AgentType.CONSUMER, AgentType.PROSUMER]
+    for agent in self.schedule.agents:
+        if agent.agent_type in members:
+            key = str(agent.member_name) + str('_') + str(agent.unique_id)
+            savings_dict[key] = agent.savings_ToD
+    return json.dumps(savings_dict)
+
+
+def get_energy_cost(self):
+    """
+    Returns energy cost for community member for importing electricity from the grid.
+    :param self:
+    :return:  a dict of energy cost for member per timestep
+    """
+    costs_dict = {}
+    members = [AgentType.CONSUMER, AgentType.PROSUMER]
+    for agent in self.schedule.agents:
+        if agent.agent_type in members:
+            key = str(agent.member_name) + str('_') + str(agent.unique_id)
+            costs_dict[key] = agent.energy_cost
+    return json.dumps(costs_dict)
+
+
+def get_date(self):
+    """"
+    Returns the date for the model simulation
+    """
+    return self.date

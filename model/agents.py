@@ -8,11 +8,13 @@ import math
 
 import numpy as np
 import pandas as pd
+
+pd.options.mode.chained_assignment = None  # default='warn'
 from mesa import Agent
 
 from model.enumerations import *
 
-random.seed(123)
+# random.seed(123)
 
 # Read the model input data
 df = pd.read_csv("../data/processed/model_input_data.csv", parse_dates=['Local'], infer_datetime_format=True,
@@ -26,18 +28,17 @@ class Coordinator(Agent):
 
     def __init__(self, unique_id, model):
         super().__init__(unique_id, model)
-        self.member_type = MemberType.COORDINATOR
+        self.agent_type = AgentType.COORDINATOR
         self.total_energy_export = None
         self.total_energy_import = None
         self.date = self.model.date
         self.date_index = pd.date_range(start=self.date, periods=96, freq='15min')
 
     def step(self):
-        self.date = self.model.date
+        self.update_date()
         self.date_index = pd.date_range(start=self.date, periods=96, freq='15min')
         self.balance_supply_and_demand()
-        self.distribute_revenue()
-        if self.model.time_of_day is not None:
+        if self.model.participation_in_tod is not None and self.model.participation_in_tod > 0:
             self.release_tod_schedule()
 
     def balance_supply_and_demand(self):
@@ -45,9 +46,9 @@ class Coordinator(Agent):
         agg_supply = pd.Series(0, index=self.date_index)
         agg_demand = pd.Series(0, index=self.date_index)
         for agent in self.model.schedule.agents:
-            if agent.member_type is MemberType.CONSUMER or agent.member_type is MemberType.PROSUMER:
-                agg_demand += agent.demand_realized
-            if agent.member_type is MemberType.PROSUMER:
+            if agent.agent_type is AgentType.CONSUMER or agent.agent_type is AgentType.PROSUMER:
+                agg_demand += agent.realised_demand
+            if agent.agent_type is AgentType.PROSUMER:
                 agg_supply += agent.excess_generation
         energy_export = (agg_supply - agg_demand).clip(lower=0)
         energy_import = (agg_demand - agg_supply).clip(lower=0)
@@ -56,34 +57,40 @@ class Coordinator(Agent):
 
     def release_tod_schedule(self):
         tomorrow = (datetime.datetime.strptime(self.date, '%Y-%m-%d') + datetime.timedelta(days=1)).strftime('%Y-%m-%d')
-        empty_series = pd.Series(0, index=self.date_index)
+        index = pd.date_range(start=tomorrow, periods=96, freq='15min')
+        empty_series = pd.Series(0, index=index)
         day_ahead_demand = empty_series
         day_ahead_supply = empty_series
         # Get aggregated demand and supply for the next day
+        agents = [AgentType.CONSUMER, AgentType.PROSUMER]
         for agent in self.model.schedule.agents:
-            if agent.member_type is MemberType.CONSUMER or agent.member_type is MemberType.PROSUMER:
-                day_ahead_demand += agent.day_ahead_demand
-            if agent.member_type is MemberType.PROSUMER:
-                day_ahead_supply += agent.day_ahead_supply
-        # Get the energy export and import for the next day
-        surplus = (day_ahead_supply - day_ahead_demand)
-        deficit = (day_ahead_demand - day_ahead_supply)
-        # Get the time for surplus and deficit next day
+            if agent.agent_type in agents:
+                day_ahead_demand = day_ahead_demand + agent.day_ahead_demand
+                day_ahead_supply = day_ahead_supply + agent.day_ahead_supply
+        day_ahead_supply = self.adjust_generation_schedule(day_ahead_supply)
         index = pd.date_range(start=tomorrow, periods=96, freq='H')
-        day_ahead_df = pd.DataFrame(index=index, data={'surplus': surplus, 'deficit': deficit})
-        self.model.tod_surplus = day_ahead_df[day_ahead_df['surplus'] > 0].index.to_series()
-        self.model.tod_deficit = day_ahead_df[day_ahead_df['deficit'] > 0].index.to_series()
+        day_ahead_df = pd.DataFrame(index=index, data={'surplus': day_ahead_supply, 'deficit': day_ahead_demand})
+        supply_threshold = day_ahead_df['surplus'].quantile(0.7)
+        demand_threshold = day_ahead_df['deficit'].quantile(0.7)
+        self.model.tod_surplus_timing = day_ahead_df[day_ahead_df['surplus'] > supply_threshold].index.to_list()
+        self.model.tod_deficit_timing = day_ahead_df[day_ahead_df['deficit'] > demand_threshold].index.to_list()
 
-    def distribute_revenue(self):
-        """This method distributes the revenue to the consumers."""
-        # TODO: Implement the revenue distribution
-        pass
+    def adjust_generation_schedule(self, day_ahead_supply):
+        if random.uniform(0, 1) < 5:
+            day_ahead_supply = day_ahead_supply * (1 + random.uniform(0.5, self.model.uncertainties['X3']))
+        else:
+            day_ahead_supply = day_ahead_supply * (1 - random.uniform(0.5, self.model.uncertainties['X3']))
+        return day_ahead_supply
+
+    def update_date(self):
+        self.date = self.model.date
+        return None
 
 
 class Member(Agent):
     """An agent with fixed initial wealth."""
 
-    def __init__(self, unique_id, model, member_name, member_type, demand_flexibility, asset_list):
+    def __init__(self, unique_id, model, member_name, agent_type, member_type, demand_flexibility, asset_list):
         """ Initialize agent and variables.
         param unique_id: int: unique identifier for the agent
         :param model: model: model in which the agent lives
@@ -92,34 +99,25 @@ class Member(Agent):
         :param asset_list: list: list of assets the member owns. Leave empty if the member has no assets.
         """
         super().__init__(unique_id, model)
-        self.member = member_name
+        self.member_name = member_name
+        self.agent_type = agent_type
         self.member_type = member_type
         self.date = self.model.date
         self.date_index = pd.date_range(start=self.date, periods=96, freq='15min')
         self.load = 0
         self.demand_flexibility = demand_flexibility
-        self.demand_realized = pd.Series(0, index=self.date_index)
+        self.realised_demand = pd.Series(0, index=self.date_index)
         self.excess_generation = pd.Series(0, index=self.date_index)
         self.assets = []
-        item = None
-        if self.member_type is MemberType.PROSUMER:
-            for asset in asset_list:
-                if asset['asset_type'] is Solar:
-                    item = Solar(unique_id=self.model.next_id(), model=self.model,
-                                 capacity=asset['capacity'], capex=asset['price'], efficiency=asset['efficiency'],
-                                 owner=self)
-                elif asset['asset_type'] is Wind:
-                    item = Wind(unique_id=self.model.next_id(), model=self.model)
-                self.assets.append(item)
-                self.model.schedule.add(item)
-                if asset['asset_type'] in self.model.all_assets:
-                    self.model.all_assets[asset['asset_type']].append(item)
-                else:
-                    self.model.all_assets[asset['asset_type']] = [item]
+        self.shifted_load = 0  # Load shifted by the member as complaince of ToD schedule
+        self.savings_ToD = 0  # Savings in Euros by complying with demand response
+        # If agent is a prosumer, initialise assets
+        if self.agent_type is AgentType.PROSUMER:
+            self.initialise_asset(asset_list)
         else:
             self.assets = None
 
-        self.demand_schedule = pd.Series(0, index=self.date_index)
+        self.scheduled_demand = pd.Series(0, index=self.date_index)
         self.generation_schedule = pd.Series(0, index=self.date_index)
         self.day_ahead_demand = pd.Series(0, index=self.date_index)
         self.day_ahead_supply = pd.Series(0, index=self.date_index)
@@ -128,13 +126,36 @@ class Member(Agent):
         self.average_lcoe = self.compute_average_lcoe()
 
     def step(self):
-        self.date = self.model.date
-        self.demand_schedule = self.get_demand_schedule()
-        self.day_ahead_demand, self.day_ahead_supply = self.generate_day_ahead_schedules()
-        self.generation_schedule = self.get_generation_schedule()
-        self.adjust_schedules()
+        super().step()
+        self.update_date()
+        self.get_demand_schedule()
+        self.get_generation_schedule()
+        self.generate_day_ahead_schedules()
+        self.adjust_schedule_for_captive_consumption()
+        self.adjust_schedule_for_tod()
         self.compute_energy_cost()
+        self.compute_earnings()
         pass
+
+    def initialise_asset(self, asset_list):
+        item = None
+        for asset in asset_list:
+            if asset['asset_type'] is Solar:
+                item = Solar(unique_id=self.model.next_id(), model=self.model,
+                             capacity=asset['capacity'], capex=asset['price'], efficiency=asset['efficiency'],
+                             owner=self)
+            elif asset['asset_type'] is Wind:
+                item = Wind(unique_id=self.model.next_id(), model=self.model)
+            self.assets.append(item)
+            self.model.schedule.add(item)
+            if asset['asset_type'] in self.model.all_assets:
+                self.model.all_assets[asset['asset_type']].append(item)
+            else:
+                self.model.all_assets[asset['asset_type']] = [item]
+
+    def update_date(self):
+        self.date = self.model.date
+        return None
 
     def get_generation_schedule(self):
         """
@@ -143,77 +164,89 @@ class Member(Agent):
         """
         index = pd.date_range(start=self.date, periods=96, freq='15min')
         generation_schedule = pd.Series(index=index, data=0)
-        if self.member_type is MemberType.PROSUMER:
+        if self.agent_type is AgentType.PROSUMER:
             for asset in self.assets:
                 generation_schedule += asset.generate_supply_schedule()
         else:
             pass
-        return generation_schedule
+        self.generation_schedule = generation_schedule
+        return None
 
     def get_demand_schedule(self):
         """This method returns the demand schedule for the member_name."""
-        demand_schedule = df.loc[self.date, self.member]
-        return demand_schedule
+        self.scheduled_demand = df.loc[self.date, self.member_name]
+        return None
 
     def generate_day_ahead_schedules(self):
         """Generates day ahead demand and (excess) generation for an agent."""
         tomorrow = (datetime.datetime.strptime(self.date, '%Y-%m-%d') + datetime.timedelta(days=1)).strftime('%Y-%m-%d')
-        demand = df.loc[tomorrow, self.member]
+        demand = df.loc[tomorrow, self.member_name]
         index = pd.date_range(start=tomorrow, periods=96, freq='15min')
         generation = pd.Series(index=index, data=0)
-        if self.member_type is MemberType.PROSUMER:
+        if self.agent_type is AgentType.PROSUMER:
             for asset in self.assets:
                 generation += asset.day_ahead_supply_schedule()
-        else:
-            pass
-        demand = (demand - generation).clip(lower=0)
-        generation = (generation - demand).clip(lower=0)
-        return demand, generation
 
-    def adjust_schedules(self):
-        """Modifies the demand schedule for an agent based on captive the TOD compliance."""
-        realised_demand = None
+        self.day_ahead_demand = (demand - generation).clip(lower=0)
+        self.day_ahead_supply = (generation - demand).clip(lower=0)
+        return None
+
+    def adjust_schedule_for_captive_consumption(self):
+        """Modifies the demand schedule for an agent based on captive generation"""
         # Adjusting self consumption from the demand schedule and generation schedule
-        if self.member_type is MemberType.PROSUMER:
-            realised_demand = (self.demand_schedule - self.generation_schedule).clip(lower=0)
+        if self.agent_type is AgentType.PROSUMER:
+            self.realised_demand = (self.scheduled_demand - self.generation_schedule).clip(lower=0)
             # Updating the generation schedule based on captive consumption
-            self.excess_generation = (self.generation_schedule - self.demand_schedule).clip(lower=0)
+            self.excess_generation = (self.generation_schedule - self.scheduled_demand).clip(lower=0)
         else:
-            realised_demand = self.demand_schedule
+            self.realised_demand = self.scheduled_demand
 
-        # Updating the demand schedule based on demand response
-        revised_demand = None
-        if self.demand_flexibility is not None:
-            if self.model.tod_surplus is not None:
-                revised_demand = realised_demand[realised_demand.index.isin(self.model.tod_surplus)] * (
-                        1 + self.demand_flexibility)
-            if self.model.tod_deficit is not None:
-                revised_demand = revised_demand[revised_demand.isin(self.model.tod_deficit)] * (1 - self.demand_flexibility)
-                revised_demand = revised_demand.clip(lower=0)
-            if revised_demand is None:
-                revised_demand = realised_demand
-            realised_demand = revised_demand
-            pass
-        else:
-            pass
-        self.demand_realized = realised_demand
+    def adjust_schedule_for_tod(self):
+        # Update the demand schedule based on demand response
+        increased_consumption = 0
+        reduced_consumption = 0
+        if random.uniform(0, 1) <= self.model.participation_in_tod:
+            if self.model.tod_surplus_timing is not None:
+                if set(self.model.tod_surplus_timing) & set(self.realised_demand.index):
+                    updated_schedule = self.realised_demand[self.model.tod_surplus_timing] * (
+                            1 + self.demand_flexibility * random.uniform(self.model.demand_availability['minimum'],
+                                                                         self.model.demand_availability['maximum']))
+                    increased_consumption = updated_schedule.sum() - self.realised_demand[
+                        self.model.tod_surplus_timing].sum()
+                    increased_consumption = abs(increased_consumption)
+                    self.realised_demand.loc[self.model.tod_surplus_timing] = updated_schedule
+            if self.model.tod_deficit_timing is not None:
+                if set(self.model.tod_deficit_timing) & set(self.realised_demand.index):
+                    updated_schedule = self.realised_demand[self.model.tod_surplus_timing] * (
+                            1 - self.demand_flexibility * random.uniform(self.model.demand_availability['minimum'],
+                                                                         self.model.demand_availability['maximum']))
+                    reduced_consumption = self.realised_demand[
+                                              self.model.tod_surplus_timing].sum() - updated_schedule.sum()
+                    reduced_consumption = abs(reduced_consumption)
+                    self.realised_demand.loc[self.model.tod_surplus_timing] = updated_schedule
+            self.shifted_load = max(increased_consumption, reduced_consumption)
 
     def compute_energy_cost(self):
         """Computes the energy cost for a member"""
         month = datetime.datetime.strptime(self.date, '%Y-%m-%d').strftime('%B')
         fixed_costs = electricity_costs[month]['Electricity Transport rate (Euro/day)'] + electricity_costs[month][
             'Fixed delivery rate (Euro/day)']
-        variable_costs = electricity_costs[month]['Variable delivery rate (Euro/kWh)'] * self.demand_realized + \
+        variable_costs = electricity_costs[month]['Variable delivery rate (Euro/kWh)'] * self.realised_demand + \
                          electricity_costs[month][
-                             'ODE tax (Environmental Taxes Act) (Euro/kWh)'] * self.demand_realized + \
-                         electricity_costs[month]['Energy tax (Euro/kWh)'] * self.demand_realized + \
-                         electricity_costs[month]['Variable delivery rate (Euro/kWh)'] * self.demand_realized
+                             'ODE tax (Environmental Taxes Act) (Euro/kWh)'] * self.realised_demand + \
+                         electricity_costs[month]['Energy tax (Euro/kWh)'] * self.realised_demand + \
+                         electricity_costs[month]['Variable delivery rate (Euro/kWh)'] * self.realised_demand
         variable_costs = variable_costs.sum()
         self.energy_cost = fixed_costs + variable_costs
+        self.savings_ToD = electricity_costs[month]['Variable delivery rate (Euro/kWh)'] * self.shifted_load + \
+                           electricity_costs[month][
+                               'ODE tax (Environmental Taxes Act) (Euro/kWh)'] * self.shifted_load + \
+                           electricity_costs[month]['Energy tax (Euro/kWh)'] * self.shifted_load + \
+                           electricity_costs[month]['Variable delivery rate (Euro/kWh)'] * self.shifted_load
 
     def compute_average_lcoe(self):
         """Computes the average LCOE for a member"""
-        if self.member_type == MemberType.PROSUMER:
+        if self.agent_type == AgentType.PROSUMER:
             lcoe = 0
             for asset in self.assets:
                 lcoe += asset.lcoe
@@ -225,43 +258,10 @@ class Member(Agent):
     def compute_earnings(self):
         """Computes the earnings for a member"""
         self.earnings = 0
-        if self.member_type is MemberType.PROSUMER:
+        if self.agent_type is AgentType.PROSUMER:
             self.earnings = self.excess_generation.sum() * self.average_lcoe
         else:
             pass
-
-
-class Residential(Member):
-    """A member_name of the residential community."""
-
-    def __init__(self, unique_id, model, member_name, member_type, demand_flexibility, asset_list):
-        super().__init__(unique_id, model, member_name, member_type, demand_flexibility, asset_list)
-        if self.model.time_of_day is None:
-            self.demand_flexibility = False
-        else:
-            self.demand_flexibility = True
-
-    def get_demand_schedule(self):
-        """This method returns the demand schedule for the member_name."""
-        # Randomly pick a household type
-        demand_schedule = df.loc[self.date, self.member]
-        return demand_schedule
-
-
-class NonResidential(Member):
-    """A member_name of the residential community."""
-
-    def __init__(self, unique_id, model, member_name, member_type, demand_flexibility, asset_list):
-        super().__init__(unique_id, model, member_name, member_type, demand_flexibility, asset_list)
-        pass
-
-
-class EVChargingStation(Member):
-    """A member_name of the residential community."""
-
-    def __init__(self, unique_id, model, member_name, member_type, demand_flexibility, asset_list):
-        super().__init__(unique_id, model, member_name, member_type, demand_flexibility, asset_list)
-        pass
 
 
 class Asset(Agent):
@@ -271,11 +271,10 @@ class Asset(Agent):
                  estimated_lifetime_generation, capex, opex, discount_rate=0.055):
         super().__init__(unique_id, model)
         self.date = self.model.date
-        self.member_type = MemberType.ASSET
+        self.agent_type = AgentType.ASSET
         self.owner = owner
         self.efficiency = efficiency
         self.capacity = capacity
-        self.member_type = MemberType.ASSET
         self.asset_age = asset_age
         self.estimated_lifetime_generation = estimated_lifetime_generation
         if self.estimated_lifetime_generation == 0:
@@ -288,12 +287,11 @@ class Asset(Agent):
         self.compute_lcoe()
 
     def step(self):
+        super().step()
         self.date = self.model.date
         self.supply_schedule = self.generate_supply_schedule()
         self.day_ahead_schedule = self.day_ahead_supply_schedule()
         pass
-
-
 
     def generate_supply_schedule(self):
         pass
@@ -391,9 +389,10 @@ class Wind(Asset):
                                                                                   3) * self.efficiency * self.number_of_turbines
         return supply_schedule
 
+
 class Battery(Asset):
     def __init__(self, unique_id, model, capacity=0, efficiency=0, owner=None, asset_age=1,
                  estimated_lifetime_generation=0, capex=0, opex=0, discount_rate=0.055):
         self.asset_type = AssetType.BATTERY_STORAGE
         super(Battery, self).__init__(unique_id, model, capacity, efficiency, owner, asset_age,
-                                   estimated_lifetime_generation, capex, opex, discount_rate)
+                                      estimated_lifetime_generation, capex, opex, discount_rate)

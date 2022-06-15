@@ -1,14 +1,23 @@
 from enum import Enum
 
 
-class MemberType(Enum):
+class AgentType(Enum):
     """
-    Type of community member_name.
+    Category of community member.
     """
     CONSUMER = 1
     PROSUMER = 2
     COORDINATOR = 3
     ASSET = 4
+
+
+class MemberType(Enum):
+    """
+    Type of community member.
+    """
+    RESIDENTIAL = 1
+    NON_RESIDENTIAL = 2
+    COORDINATOR = 3
 
 
 class AssetType(Enum):

@@ -31,25 +31,25 @@ community members.
 
 This model is currently in development. This document will be updated shortly.
 
-### TODOs 
+## Model
+
+### XLRM Framework
+
+<img src="images/Model-XLRM.png" alt="xlrm_diagram">
+
+### TODOs
+
 * [ ] Create archetypes for community configurations
 * [ ] Implement energy storage/battery
-
 
 #### Agents conceptualisation
 
 `Coordinator`:
 This agent is responsible for following tasks in the energy community.
+
 1. balance_supply_demand
 2. release_tod_schedule
 3. distribute_costs_and_benefits
-
-
-
-
-
-
-
 
 # Results
 

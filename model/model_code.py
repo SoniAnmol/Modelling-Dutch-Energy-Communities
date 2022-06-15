@@ -2,8 +2,8 @@
 import time
 
 from mesa import Model
+from mesa.time import BaseScheduler
 from mesa.datacollection import DataCollector
-from mesa.time import RandomActivation
 
 from model.community_setup import *
 from model.data_reporters import *
@@ -16,67 +16,104 @@ class EnergyCommunity(Model):
 
     date = None
 
-    def __init__(self, agents_list=agent_list, time_of_day=1, start_date=None):
+    def __init__(self,
+                 levers=None,
+                 uncertainties=None,
+                 agents_list=agent_list,
+                 start_date=None, ):
         super().__init__()
+
+        if levers is None:
+            self.levers = {
+                "L1": 0.5,
+                # Percentage of members participating in the demand response program (Social)
+                "L2": 0.2,
+                # Percentage of flexible (shift-able)  demand for residential community members (Technical)
+                "L3": 0.3,
+                # Percentage of flexible (shift-able)  demand for non-residential community members (Technical)
+            }
+        else:
+            self.levers = levers
+
+        if uncertainties is None:
+            self.uncertainties = {
+                "X1": 0.30,
+                # Minimum percentage of flexible demand available for demand response on a single day (Social)
+                "X2": 0.75,
+                # Maximum percentage of flexible demand available for demand response on a single day (Social)
+                "X3": 0.80,
+                # Percentage accuracy of day-ahead generation projections from renewable assets (Technical)
+            }
+        else:
+            self.uncertainties = uncertainties
 
         if start_date is None:
             start_date = datetime.datetime(2021, 1, 1)
         self.date = start_date.strftime('%Y-%m-%d')
         self.date_index = pd.date_range(start=self.date, periods=96, freq='15min')
-        self.time_of_day = time_of_day
+
+        self.demand_availability = {'minimum': self.uncertainties['X1'],
+                                    'maximum': self.uncertainties['X2']}
+        self.participation_in_tod = self.levers['L1']
         self.tick = 0
-        self.tod_surplus = None  # Time of day when surplus electricity is available
-        self.tod_deficit = None  # Time of day when electricity is needed from the grid
+        self.tod_surplus_timing = None  # Time of day when surplus electricity is available
+        self.tod_deficit_timing = None  # Time of day when electricity is needed from the grid
         self.agent_list = agents_list
-        self.schedule = RandomActivation(self)
+        self.schedule = BaseScheduler(self)
         self.all_assets = {}
-        self.all_agents = self.create_agents()
+        self.create_agents()
         self.datacollector = DataCollector(model_reporters={
-            "energy costs": get_energy_expenses,
-            "avg agent demand": get_average_demand,
-            "total agent demand": get_total_demand,
-            "total generation": get_total_supply,
-            "avg generation": get_average_supply})
+            "date": get_date,
+            # date or the time step for the model simulation
+            "M1: realised_demand": get_realised_demand,
+            # realised demand after incorporating demand response
+            "M2: scheduled_demand": get_scheduled_demand,
+            # demand before incorporating demand response
+            "M3: shifted_load": get_shifted_load,
+            # amount of load moved/shifted because of demand response
+            "M4: total_generation": get_generation,
+            # generation from the renewable assets in the simulation model
+            "M5: savings_on_ToD": get_savings,
+            # savings made by avoiding import of electricity from grid by community members
+            "M6: energy_costs": get_energy_cost
+            # total expenses made by community members for procuring electricity from the grid
+        })
 
     def step(self):
         """Advance the model by one step."""
+        super().step()
         self.schedule.step()
         self.datacollector.collect(self)
-        self.date = self.tick_to_date(self.tick + 1)
+        self.tick += 1
+        self.date = self.tick_to_date(self.tick)
 
     def create_agents(self):
         """Create agents and add them to the schedule."""
-        all_agents = {}
         for agent_details in self.agent_list:
-            if agent_details['agent_type'] is Coordinator:
+            if agent_details['member_type'] is MemberType.COORDINATOR:
                 agent = Coordinator(unique_id=self.next_id(), model=self)
-            elif agent_details['agent_type'] is Residential:
-                agent = Residential(unique_id=self.next_id(),
-                                    member_name=agent_details['member_name'],
-                                    member_type=agent_details['member_type'],
-                                    demand_flexibility=agent_details['demand_flexibility'],
-                                    asset_list=agent_details['asset_list'],
-                                    model=self)
-            elif agent_details['agent_type'] is NonResidential:
-                agent = NonResidential(unique_id=self.next_id(), member_name=agent_details['member_name'],
-                                       member_type=agent_details['member_type'],
-                                       demand_flexibility=agent_details['demand_flexibility'],
-                                       asset_list=agent_details['asset_list'],
-                                       model=self)
-            elif agent_details['agent_type'] is EVChargingStation:
-                agent = EVChargingStation(unique_id=self.next_id(), member_name=agent_details['member_name'],
-                                          member_type=agent_details['member_type'],
-                                          demand_flexibility=agent_details['demand_flexibility'],
-                                          asset_list=agent_details['asset_list'], model=self)
-            self.schedule.add(agent)
-            if agent_details['agent_type'] in all_agents:
-                all_agents[agent_details['agent_type']].append(agent)
             else:
-                all_agents[agent_details['agent_type']] = [agent]
+                agent = Member(unique_id=self.next_id(),
+                               member_name=agent_details['member_name'],
+                               agent_type=agent_details['agent_type'],
+                               member_type=agent_details['member_type'],
+                               demand_flexibility=self.select_demand_flexibility(
+                                   member_type=agent_details['member_type']),
+                               asset_list=agent_details['asset_list'],
+                               model=self)
+            self.schedule.add(agent)
+        return None
 
-        return all_agents
+    def select_demand_flexibility(self, member_type):
+        "Selects demand flexibility from levers for an agent based on member type"
+        demand_flexibility = 0.20  # Default member flexibility
+        if member_type is MemberType.RESIDENTIAL:
+            demand_flexibility = self.levers['L2']
+        elif member_type is MemberType.NON_RESIDENTIAL:
+            demand_flexibility = self.levers['L3']
+        return demand_flexibility
 
-    def run_simulation(self, steps=1, time_tracking=False, debug=False):
+    def run_simulation(self, steps=365, time_tracking=False, debug=False):
         """
         Runs the model for a specific amount of steps.
         :param steps: int: number of steps (in years)
