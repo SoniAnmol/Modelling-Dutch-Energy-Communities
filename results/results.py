@@ -6,6 +6,7 @@ import re
 import ast
 
 import matplotlib.pyplot as plt
+import seaborn as sns
 import pandas as pd
 
 from model.agents import *
@@ -86,7 +87,26 @@ def extract_df_from_json(results, column='savings'):
         df = df.append(item, ignore_index=True)
     df = df[1:]
     df['date'] = results['date']
-    df = df.set_index('date')
     return df
 
 
+def plot_community_consumption_and_generation(results):
+    realised_demand = extract_df_from_json(results, 'M1: realised_demand')
+    total_generation = extract_df_from_json(results, 'M4: total_generation')
+
+    df = pd.DataFrame()
+    df['total_generation'] = total_generation.sum(axis=1)
+    df['realised_demand'] = realised_demand.sum(axis=1)
+    df['date'] = realised_demand.sum(axis=1).index.to_list()
+    df['date'] = pd.to_datetime(df['date'], format='%Y-%m-%d')
+    df.set_index('date', drop=True, inplace=True)
+
+    fig, ax = plt.subplots(1, 1, figsize=(15, 5))
+    sns.lineplot(data=df, ax=ax)
+    ax.grid(True)
+    plt.xticks(rotation=0)
+    plt.legend()
+    plt.title('Total electricity consumption and generation for the energy community')
+    plt.xlabel('Date')
+    plt.ylabel('kWh')
+    plt.tight_layout()

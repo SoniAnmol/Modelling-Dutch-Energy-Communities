@@ -112,7 +112,7 @@ class Member(Agent):
         self.shifted_load = 0  # Load shifted by the member as complaince of ToD schedule
         self.savings_ToD = 0  # Savings in Euros by complying with demand response
         # If agent is a prosumer, initialise assets
-        if self.agent_type is AgentType.PROSUMER:
+        if asset_list is not None:
             self.initialise_asset(asset_list)
         else:
             self.assets = None
@@ -243,6 +243,7 @@ class Member(Agent):
                                'ODE tax (Environmental Taxes Act) (Euro/kWh)'] * self.shifted_load + \
                            electricity_costs[month]['Energy tax (Euro/kWh)'] * self.shifted_load + \
                            electricity_costs[month]['Variable delivery rate (Euro/kWh)'] * self.shifted_load
+        self.energy_cost = self.energy_cost - self.savings_ToD
 
     def compute_average_lcoe(self):
         """Computes the average LCOE for a member"""
@@ -344,14 +345,14 @@ class Solar(Asset):
     def generate_supply_schedule(self):
         """ Generates a schedule for the solar asset based on the capacity and efficiency of the solar panel"""
         super().generate_supply_schedule()
-        supply_schedule = self.capacity * self.efficiency * df.loc[self.date, 'Direct [W/m^2]'] / 1000
+        supply_schedule = self.capacity * self.efficiency * df.loc[self.date, 'Direct [W/m^2]'] / 1000000
         return supply_schedule
 
     def day_ahead_supply_schedule(self):
         """ Generates a schedule for the solar asset based on the capacity and efficiency of the solar panel"""
         super().day_ahead_supply_schedule()
         tomorrow = (datetime.datetime.strptime(self.date, '%Y-%m-%d') + datetime.timedelta(days=1)).strftime('%Y-%m-%d')
-        supply_schedule = self.capacity * self.efficiency * df.loc[tomorrow, 'Direct [W/m^2]'] / 1000
+        supply_schedule = self.capacity * self.efficiency * df.loc[tomorrow, 'Direct [W/m^2]'] / 1000000
         return supply_schedule
 
 
