@@ -19,7 +19,7 @@ from model.enumerations import *
 # Read the model input data
 df = pd.read_csv("data/processed/model_input_data.csv", parse_dates=['Local'], infer_datetime_format=True,
                  index_col=0)
-electricity_costs = pd.read_csv("../data/processed/electricity_costs.csv", index_col=1)
+electricity_costs = pd.read_csv("data/processed/electricity_costs.csv", index_col=1)
 electricity_costs = electricity_costs.to_dict(orient='index')
 
 
