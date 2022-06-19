@@ -5,10 +5,7 @@ from mesa import Model
 from mesa.time import BaseScheduler
 from mesa.datacollection import DataCollector
 
-from model.community_setup import *
 from model.data_reporters import *
-
-agent_list = generate_agent_list()
 
 
 class EnergyCommunity(Model):
@@ -19,7 +16,7 @@ class EnergyCommunity(Model):
     def __init__(self,
                  levers=None,
                  uncertainties=None,
-                 agents_list=agent_list,
+                 agents_list=None,
                  start_date=None, ):
         super().__init__()
 
