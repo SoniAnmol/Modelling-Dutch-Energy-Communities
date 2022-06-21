@@ -36,7 +36,7 @@ def create_community_configuration(community_name='groene_mient'):
 
     elif community_name == 'gridflex_heeten':
         number_of_prosumer_households = 40
-        number_of_consumer_households = 10
+        number_of_consumer_households = 9
 
         asset_list = [{'agent_type': Asset,
                        'asset_type': Solar,
@@ -54,20 +54,20 @@ def create_community_configuration(community_name='groene_mient'):
                                    'member_name': 'Office 1',
                                    'agent_type': AgentType.PROSUMER,
                                    'demand_flexibility': 0.20,
-                                   'asset_list': [
-                                       {'agent_type': Asset,
-                                        'asset_type': Solar,
-                                        'capacity': 400,
-                                        'efficiency': 0.20,
-                                        'price': 0.15}]},
+                                   'asset_list': [{'agent_type': Asset,
+                                                   'asset_type': Solar,
+                                                   'capacity': 100,
+                                                   'efficiency': 0.20,
+                                                   'price': 0.15}]},
                                   {'member_type': MemberType.NON_RESIDENTIAL,
                                    'member_name': 'EV_charging_station',
                                    'agent_type': AgentType.CONSUMER,
                                    'demand_flexibility': 0.20,
                                    'asset_list': [{'agent_type': Asset,
-                                                   'asset_type': Wind,
-                                                   'capacity': 1000,
-                                                   }]}]
+                                                   'asset_type': Solar,
+                                                   'capacity': 400,
+                                                   'efficiency': 0.20,
+                                                   'price': 0.15}]}]
 
     coordinator = [{'member_type': MemberType.COORDINATOR}]
     agent_list = residential_agent + non_residential_agents + coordinator

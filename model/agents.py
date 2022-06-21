@@ -374,7 +374,7 @@ class Wind(Asset):
     def generate_supply_schedule(self):
         """ Generates a schedule for the wind asset based on the capacity and efficiency of the wind turbine"""
         super().generate_supply_schedule()
-        wind_speed = df.loc[self.date, 'Direct [W/m^2]']
+        wind_speed = df.loc[self.date, 'Wind [m/s]']
         wind_speed[wind_speed > 30] = 0  # Wind turbine shuts down if wind speed is greater than 30 m/s
         supply_schedule = 0.5 * self.avg_air_density * self.swept_area * np.power(wind_speed,
                                                                                   3) * self.efficiency * self.number_of_turbines
