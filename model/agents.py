@@ -145,7 +145,7 @@ class Member(Agent):
                              capacity=asset['capacity'], capex=asset['price'], efficiency=asset['efficiency'],
                              owner=self)
             elif asset['asset_type'] is Wind:
-                item = Wind(unique_id=self.model.next_id(), model=self.model)
+                item = Wind(unique_id=self.model.next_id(), model=self.model, capacity=asset['capacity'], owner=self)
             self.assets.append(item)
             self.model.schedule.add(item)
             if asset['asset_type'] in self.model.all_assets:
@@ -308,12 +308,12 @@ class Asset(Agent):
             capacity_factor = 9.138 / 100
         elif self.asset_type is AssetType.WIND:
             capacity_factor = 27.89 / 100
-        # TODO: Add capacity factor for battery
+
         annual_generation_kWh = hours_per_year * capacity_factor / 1000
         self.estimated_lifetime_generation = lifespan * annual_generation_kWh * self.capacity
 
     def compute_lcoe(self):
-        """Calculates LCOE of the solar plant"""
+        """Calculates LCOE of the solar or wind plant"""
         lifespan = 25 - self.asset_age
         expenses = (self.capex + self.opex) / ((1 - self.discount_rate) ** (lifespan + 1))
         electricity_supplied = self.estimated_lifetime_generation / ((1 - self.discount_rate) ** (lifespan + 1))

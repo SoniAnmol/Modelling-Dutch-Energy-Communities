@@ -64,7 +64,10 @@ def create_community_configuration(community_name='groene_mient'):
                                    'member_name': 'EV_charging_station',
                                    'agent_type': AgentType.CONSUMER,
                                    'demand_flexibility': 0.20,
-                                   'asset_list': None}]
+                                   'asset_list': [{'agent_type': Asset,
+                                                   'asset_type': Wind,
+                                                   'capacity': 1000,
+                                                   }]}]
 
     coordinator = [{'member_type': MemberType.COORDINATOR}]
     agent_list = residential_agent + non_residential_agents + coordinator

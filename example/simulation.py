@@ -4,7 +4,7 @@ from model.model_code import EnergyCommunity
 from model.community_setup import *
 
 # Select the community to run the simulation 'groene_mient' or 'gridflex_heeten'
-agents_list = create_community_configuration(community_name='groene_mient')
+agents_list = create_community_configuration(community_name='gridflex_heeten')
 
 # Setup model
 model = EnergyCommunity(agents_list=agents_list)
