@@ -154,7 +154,7 @@ class Experiment:
 if __name__ == '__main__':
     start_time = time.time()
 
-    community_name = 'groene_mient'
+    community_name = 'gridflex_heeten'
     agents = create_community_configuration(community_name=community_name)
     experiment = Experiment(agent_list=agents, community=community_name)
     experiment.run_experiments(number_of_replications=10, steps=365, number_of_segments=6, segment_index=0)
