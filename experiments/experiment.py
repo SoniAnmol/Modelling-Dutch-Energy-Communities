@@ -157,7 +157,7 @@ if __name__ == '__main__':
     community_name = 'gridflex_heeten'
     agents = create_community_configuration(community_name=community_name)
     experiment = Experiment(agent_list=agents, community=community_name)
-    experiment.run_experiments(number_of_replications=10, steps=365, number_of_segments=6, segment_index=0)
+    experiment.run_experiments(number_of_replications=10, steps=365, number_of_segments=6, segment_index=5)
 
     run_time = round(time.time() - start_time, 2)
     print(f'Run time: {run_time} seconds')
