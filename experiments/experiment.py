@@ -133,20 +133,26 @@ class Experiment:
             results_df.to_csv(path)
 
     @staticmethod
-    def load_results(folder='./output/'):
-        """Load the results of the experiment from a csv file"""
-        print('Loading results...\n')
-        mypath = os.getcwd() + '/output/'
-        output_files = [f for f in listdir(mypath) if isfile(join(mypath, f))]
+    def load_results(folder='./output/', ec_name=None):
+        """
+        Loads the data of two pickles and returns them.
+        :param ec_name: string name of energy community folder
+        :param folder: string
+        :return:
+            results: dictionary with all results
+        """
+        folder = folder + ec_name + '/'
+        mypath = os.getcwd() + '/output/' + ec_name + '/'
+        outputs = [f for f in listdir(mypath) if isfile(join(mypath, f))]
 
         all_results = {}
 
-        for condition_output in output_files:
+        for condition_output in outputs:
             path = f'{folder}{condition_output}'
-            d_frame = pd.read_csv(path)
+            df = pd.read_csv(path)
 
-            condition_index = int(condition_output.split('_')[1].split('.')[0])
-            all_results[condition_index] = d_frame
+            condition_idx = int(condition_output[25:-4])  # Takes only the number of the condition
+            all_results[condition_idx] = df
 
         return all_results
 
