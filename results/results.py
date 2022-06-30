@@ -10,6 +10,7 @@ import seaborn as sns
 import pandas as pd
 
 from model.agents import *
+from experiments.experiment import *
 
 warnings.filterwarnings("ignore")
 
@@ -110,3 +111,50 @@ def plot_community_consumption_and_generation(results):
     plt.xlabel('Date')
     plt.ylabel('kWh')
     plt.tight_layout()
+
+
+def get_unique_levers_dict():
+    """This function generates a dictionary of experiment result indexes having same lever combination i.e. same policy
+    scenario"""
+    # Get experiment conditions
+    experiment_test = Experiment()
+    experimental_conditions = experiment_test.prepare_experiment_setup()
+
+    # Get unique levers
+    levers_df = experimental_conditions.iloc[:, 3:]
+    unique_levers = levers_df.drop_duplicates()
+
+    # Collecting experiments having same lever combination i.e. same policy scenario
+    same_levers = {}
+
+    for i in range(len(unique_levers)):
+        lever_combination_unique = unique_levers.iloc[i]
+        same_levers[i] = []
+
+        for j in range(len(levers_df)):
+            lever_combination = levers_df.iloc[j]
+
+            if lever_combination_unique.equals(other=lever_combination):
+                same_levers[i].append(j)
+
+    lever_descriptions = []
+    for index, row in unique_levers.iterrows():
+        l1 = get_lever_scenario(row['L1'])
+        l2 = get_lever_scenario(row['L2'])
+        l3 = get_lever_scenario(row['L3'])
+        lever_scenario = f"L1:{l1} L2:{l2} L3:{l3}"
+        lever_descriptions.append(lever_scenario)
+
+    unique_levers['lever information'] = lever_descriptions
+
+    return same_levers, unique_levers
+
+
+def get_lever_scenario(lever):
+    """reads lever values and returns policy scenario"""
+    if lever < 0.4:
+        return 'B'
+    elif lever < 0.6:
+        return 'O'
+    else:
+        return 'V'
