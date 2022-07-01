@@ -151,7 +151,7 @@ class Experiment:
             path = f'{folder}{condition_output}'
             df = pd.read_csv(path)
 
-            condition_idx = int(condition_output[25:-4])  # Takes only the number of the condition
+            condition_idx = int(condition_output[22:-4])  # Takes only the number of the condition
             all_results[condition_idx] = df
 
         return all_results
