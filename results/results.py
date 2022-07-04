@@ -152,9 +152,9 @@ def get_unique_levers_dict():
 
 def get_lever_scenario(lever):
     """reads lever values and returns policy scenario"""
-    if lever < 0.4:
+    if lever == 0 or lever == 0.5:
         return 'B'
-    elif lever < 0.6:
+    elif lever == 5 or lever == 0.5 or lever == 0.45:
         return 'O'
     else:
         return 'V'
