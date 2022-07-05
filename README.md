@@ -1,24 +1,18 @@
 [Home](https://sonianmol.com/)
 
-# Modelling Dutch Energy Communities
+# Exploring demand response in energy communities
 
-This is an agent-based simulation model of a Dutch energy community.
-<br>
-<img src="https://www.ped-interact.eu/wp-content/uploads/2021/05/Energy-Community.png" alt="Illustration of a energy community" style=" width: 80%; margin: 0.5cm">
-<br>
-<small>Image
-source: [Energy Community](https://www.ped-interact.eu/wp-content/uploads/2021/05/Energy-Community.png)</small>
-<br>
+This project is the masters thesis for M.Sc. Engineering and Policy Analysis at TU Delft. In this project, an
+agent-based model of energy community is created using `mesa` library. This model serve as a testing ground for testing
+demand response policies on the modeled energy communities.
 
-## Table of contents:
+## Authors
 
-- [General information](#general-information)
-- [Current state](#current-state)
-- [Introduction](#introduction)
-- [Model](#model)
-- [Data](#data)
-- [Results](#results)
-- [Conclusion](#conclusion)
+- [@SoniAnmol](https://www.github.com/SoniAnmol) - Anmol Soni
+
+## Current state
+
+This model is currently in development. This document will be updated shortly.
 
 ## General information
 
@@ -26,10 +20,6 @@ This project is a thesis project done in collaboration with [Croonwolter&Dros](h
 model is primary focused on electric energy communities and can be extended to other energy sources. The model is used
 to evaluate demand response with in energy communities while ensuring fair distribution of cost and benefits among
 community members.
-
-## Current state
-
-This model is currently in development. This document will be updated shortly.
 
 ## Model
 
@@ -41,24 +31,13 @@ This model is currently in development. This document will be updated shortly.
 
 <img src="images/Model-System-relationships.png">
 
-### TODOs
+## Community members
 
-* [ ] Create archetypes for community configurations
-* [ ] Implement energy storage/battery
+This model has following demand profiles in the data bank. These demand profiles can be combined in different
+permutations and cobinations for creating community configurations.
 
-#### Agents conceptualisation
+- Three demand profiles for residential community members
+- Four demand profiles for non-residential community members (office buildings)
+- Demand profile of a School (MBO)
+- Demand profile of an EV charging station with three slow chargers
 
-`Coordinator`:
-This agent is responsible for following tasks in the energy community.
-
-1. balance_supply_demand
-2. release_tod_schedule
-3. distribute_costs_and_benefits
-
-# Results
-
-TODO
-
-# Conclusion
-
-TODO
