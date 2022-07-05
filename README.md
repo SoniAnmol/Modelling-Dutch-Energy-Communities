@@ -39,6 +39,30 @@ community members.
           
 └── README.md          
 
+```angular2html
+./Modelling-Dutch-Energy-Communities/
+│
+├───data                         
+│   ├───.ipynb_checkpoints       
+│   ├───processed                
+│   └───raw                      
+├───evidence_files               
+│   ├───figures_validation       
+│   └───figures_verification     
+├───example                      
+├───experiments                  
+│   └───figures                  
+│       ├───greone_mient         
+│       └───gridflex             
+├───images                       
+│   └───UML                      
+├───model
+│   └───__pycache__
+└───results
+
+```
+
+
 ## Model
 
 ### XLRM Framework
