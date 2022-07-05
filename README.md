@@ -21,6 +21,24 @@ model is primary focused on electric energy communities and can be extended to o
 to evaluate demand response with in energy communities while ensuring fair distribution of cost and benefits among
 community members.
 
+## Repository structure
+
+./Modelling-Dutch-Energy-Communities/
+├── data
+├── evidence files
+│   ├── figures_validation
+│   ├── figures_verification
+│   ├── Model-validation-setup.png
+│   ├── model_validation.ipynb
+│   └── mode_verification.ipynb  
+├── example
+│   ├── check_results.ipynb                 
+│   └── simulation.py                     # Example script to run the model
+├── images
+├── model                          
+          
+└── README.md          
+
 ## Model
 
 ### XLRM Framework
