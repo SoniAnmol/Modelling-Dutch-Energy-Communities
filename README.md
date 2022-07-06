@@ -23,42 +23,25 @@ community members.
 
 ## Repository structure
 
-./Modelling-Dutch-Energy-Communities/
-├── data
-├── evidence files
-│   ├── figures_validation
-│   ├── figures_verification
-│   ├── Model-validation-setup.png
-│   ├── model_validation.ipynb
-│   └── mode_verification.ipynb  
-├── example
-│   ├── check_results.ipynb                 
-│   └── simulation.py                     # Example script to run the model
-├── images
-├── model                          
-          
-└── README.md          
-
 ```angular2html
 ./Modelling-Dutch-Energy-Communities/
 │
-├───data                         
-│   ├───.ipynb_checkpoints       
-│   ├───processed                
-│   └───raw                      
-├───evidence_files               
-│   ├───figures_validation       
-│   └───figures_verification     
-├───example                      
-├───experiments                  
-│   └───figures                  
-│       ├───greone_mient         
-│       └───gridflex             
-├───images                       
-│   └───UML                      
-├───model
+├───data                         # contains the data for the model
+│   ├───processed                # contains cleaned and processed data used by the model
+│   └───raw                      # contains raw data acquired from the source
+├───evidence_files               # contains verification and validation evidence files
+│   ├───figures_validation       # contains the plots generated from validation tests
+│   └───figures_verification     # contains the plots generated from verification tests
+├───example                      # contains an example simulation run script and results
+├───experiments                  # contains experiment setup and script for performing experiments with the model
+│   └───figures                  # contains figures generated from experiment results
+│       ├───groene_mient         # contains results generated from the results of experiments performed on Groene Mint
+│       └───gridflex             # contains results generated from the results of experiments performed on GridFlex
+├───images                       # contains figures and illustrations for the model
+│   └───UML                      # contains UML diagrams of the model
+├───model                        # contains the model and agent scripts
 │   └───__pycache__
-└───results
+└───results                      # contains the script for extracting results from the model outputs
 
 ```
 
