@@ -40,7 +40,7 @@ class Experiment:
 
         # Set up Policy Levers
         if policy_levers is None:
-            self.policy_levers = {"L1": [0, 5, 7.5],
+            self.policy_levers = {"L1": [0, 0.5, 0.75],
                                   # Percentage of members participating in the demand response program (Social)
                                   "L2": [0.1, 0.5, 1],
                                   # Percentage of flexible (shift-able)  demand for residential community members

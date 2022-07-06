@@ -139,9 +139,9 @@ def get_unique_levers_dict():
 
     lever_descriptions = []
     for index, row in unique_levers.iterrows():
-        l1 = get_lever_scenario(row['L1'])
-        l2 = get_lever_scenario(row['L2'])
-        l3 = get_lever_scenario(row['L3'])
+        l1 = get_lever_scenario(row['L1'], 'L1')
+        l2 = get_lever_scenario(row['L2'], 'L2')
+        l3 = get_lever_scenario(row['L3'], 'L3')
         lever_scenario = f"L1:{l1} L2:{l2} L3:{l3}"
         lever_descriptions.append(lever_scenario)
 
@@ -150,11 +150,66 @@ def get_unique_levers_dict():
     return same_levers, unique_levers
 
 
-def get_lever_scenario(lever):
+def get_lever_scenario(lever_value, lever):
     """reads lever values and returns policy scenario"""
-    if lever == 0 or lever == 0.5:
-        return 'B'
-    elif lever == 5 or lever == 0.5 or lever == 0.45:
-        return 'O'
-    else:
-        return 'V'
+    if lever == 'L1':
+        if lever_value == 0:
+            return 'B'
+        elif lever_value == 5:
+            return 'O'
+        elif lever_value == 7.5:
+            return 'V'
+    elif lever == 'L2':
+        if lever_value == 0.1:
+            return 'B'
+        elif lever_value == 0.5:
+            return 'O'
+        elif lever_value == 1:
+            return 'V'
+    elif lever == 'L3':
+        if lever_value == 0.1:
+            return 'B'
+        elif lever_value == 0.5:
+            return 'O'
+        elif lever_value == 0.9:
+            return 'V'
+
+
+def load_results_from_csv(ec_name=None):
+    """
+    Loads the data of two pickles and returns them.
+    :param ec_name: string name of energy community folder
+    :param folder: string
+    :return:
+        results: dictionary with all results
+    """
+    mypath = os.getcwd() + '/' + ec_name + '/'
+    outputs = [f for f in listdir(mypath) if isfile(join(mypath, f))]
+
+    all_results = {}
+
+    for condition_output in outputs:
+        path = f'{mypath}{condition_output}'
+        df = pd.read_csv(path)
+
+        condition_idx = re.findall(r'\d+', condition_output)
+        condition_idx = condition_idx[0]
+        # condition_idx = int(condition_output[22:-4])  # Takes only the number of the condition
+        # condition_idx = int(condition_output[25:-4])  # Takes only the number of the condition
+        all_results[condition_idx] = df
+
+    return all_results
+
+
+def separate_experiment_setups(results, number_of_steps):
+    separated_results = {}
+
+    for experiment, runs in results.items():
+        separated_results[experiment] = []
+        for run in range(number_of_simulation_runs):
+            run_df = runs.iloc[:number_of_steps, :]
+            runs = runs.iloc[number_of_steps + 1:, :]
+
+            separated_results[experiment].append(run_df)
+
+    return separated_results
