@@ -48,16 +48,15 @@ community members.
 
 ## Model
 
-### XLRM Framework
-
-<img src="images/Model-XLRM.png" alt="xlrm_diagram">
-
 ### System Relationship
-
+Following system relationship is captured in the model.
 <img src="images/Model-System-relationships.png">
 
-## Community members
+### XLRM Framework
+This model has adapted the following XLRM framework.
+<img src="images/Model-XLRM.png" alt="xlrm_diagram">
 
+## Community members
 This model has following demand profiles in the data bank. These demand profiles can be combined in different
 permutations and cobinations for creating community configurations.
 
