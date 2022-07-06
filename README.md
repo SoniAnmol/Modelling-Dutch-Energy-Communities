@@ -12,7 +12,7 @@ demand response policies on the modeled energy communities.
 
 ## Current state
 
-This model is currently in development. This document will be updated shortly.
+This model under currently in development. This document will be updated shortly.
 
 ## General information
 
