@@ -201,7 +201,7 @@ def load_results_from_csv(ec_name=None):
     return all_results
 
 
-def separate_experiment_setups(results, number_of_steps):
+def separate_experiment_setups(results, number_of_steps, number_of_simulation_runs=10):
     separated_results = {}
 
     for experiment, runs in results.items():
