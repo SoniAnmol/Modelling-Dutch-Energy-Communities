@@ -37,11 +37,11 @@ def create_results_df(results):
     @param results: Dict
     @return df: DataFrame
     """
-    columns = results['0'].columns.to_list()
-    df = pd.DataFrame(columns=columns)
+    d = {}
     for key in tqdm(results.keys()):
-        df = df.append(results[key])
-    df.reset_index(inplace=True, drop=True)
+        d = d | results[key].to_dict(orient='index')
+    print(f"Creating dataframe...")
+    df = pd.DataFrame.from_dict(d, orient='index')
     return df
 
 
@@ -303,6 +303,7 @@ def add_experiment_setup_details(results):
     experiment_test = Experiment()
     experimental_conditions = experiment_test.prepare_experiment_setup()
     model_inputs = experimental_conditions.columns.to_list()
+    counter = 0
     print("starting the iteration through results...")
     for key, row in tqdm(experimental_conditions.iterrows(), total=len(experimental_conditions)):
         df = results[str(key)]
@@ -334,6 +335,9 @@ def add_experiment_setup_details(results):
         df.rename(columns={'Unnamed: 0': 'step'}, inplace=True)
         # set date column
         df['date'] = pd.date_range(start='01-01-2021', freq='D', periods=365).strftime('%d-%m-%Y').to_list() * 10
+        df['index'] = np.arange(counter, counter + len(df))
+        counter = counter + len(df)
+        df.set_index('index', inplace=True, drop=True)
 
         # store the formatted dataframe in the dictionary
         results[str(key)] = df
