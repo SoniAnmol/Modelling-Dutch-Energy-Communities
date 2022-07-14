@@ -15,62 +15,9 @@ from experiments.experiment import *
 warnings.filterwarnings("ignore")
 
 
-def extract_results(data, column, agent_list):
-    """Extracts the results from the dataframe and returns a DataFrame of the results
-    :type data: DaraFrame
-    :type column: str
-    :type agent_list: list
-    """
-    columns = pd.date_range(start='2021/01/01', periods=96, freq='15min').strftime('%H:%M:%S').to_list()
-    df = pd.DataFrame(columns=columns + ['agent_type'])
-    agent_name_dict = get_agent_name_dict(agent_list)
-    for agent_type in agent_list:
-        for index, row in data.iterrows():
-            item = json.loads(row[column])[str(agent_type)]
-            a_series = pd.Series(item, index=columns)
-            a_type = pd.Series([agent_name_dict[agent_type]], index=['agent_type'])
-            a_series = pd.concat([a_series, a_type], axis=0)
-        df = df.append(a_series, ignore_index=True)
-    df = format_df(df)
-    return df
-
-
-def format_df(df):
-    df = df.T
-    header_row = -1
-    df.columns = df.iloc[header_row]
-    df = df.iloc[:-1, :]
-    # df = df.reset_index(drop=True)
-    return df
-
-
-def get_agent_name_dict(agent_list):
-    dict_vessel = {}
-    for agent in agent_list:
-        item = str(agent).split('.')[-1].strip("'>")
-        dict_vessel[agent] = item
-    return dict_vessel
-
-
-def plot_results(df, stacked=True, kind='bar', plt_title=''):
-    """
-
-    :param df: DataFrame
-    :param stacked: str
-    :param kind: str
-    :type plt_title: str
-    """
-    fig, ax = plt.subplots(figsize=(10, 5))
-    df.plot(kind=kind, stacked=stacked, ax=ax)
-    plt.xlabel('Hours')
-    plt.ylabel('kWh')
-    plt.title(plt_title.upper())
-    plt.tight_layout()
-
-
 def extract_df_from_json(results, column='savings'):
     """
-    Extract the data from result files
+    Extract the data from json result files
     :param results: DataFrame returned by the model
     :param column: Name of column for extracting the DataFrame
     :return: DataFrame with agents and value of matrix for each timestep
@@ -114,8 +61,7 @@ def plot_community_consumption_and_generation(results):
 
 
 def get_unique_levers_dict():
-    """This function generates a dictionary of experiment result indexes having same lever combination i.e. same policy
-    scenario"""
+    """This function generates a dictionary of experiment result indexes having same lever combination i.e. same Policies"""
     # Get experiment conditions
     experiment_test = Experiment()
     experimental_conditions = experiment_test.prepare_experiment_setup()
@@ -151,7 +97,7 @@ def get_unique_levers_dict():
 
 
 def get_lever_scenario(lever_value, lever):
-    """reads lever values and returns policy scenario"""
+    """Reads lever values and returns policy scenario for subplot titles"""
     if lever == 'L1':
         if lever_value == 0:
             return 'B'
@@ -177,7 +123,7 @@ def get_lever_scenario(lever_value, lever):
 
 def load_results_from_csv(ec_name=None):
     """
-    Loads the data of two pickles and returns them.
+    Loads the data from all csv. files and returns a dictionary.
     :param ec_name: string name of energy community folder
     :param folder: string
     :return:
@@ -192,16 +138,17 @@ def load_results_from_csv(ec_name=None):
         path = f'{mypath}{condition_output}'
         df = pd.read_csv(path)
 
-        condition_idx = re.findall(r'\d+', condition_output)
-        condition_idx = condition_idx[0]
-        # condition_idx = int(condition_output[22:-4])  # Takes only the number of the condition
-        # condition_idx = int(condition_output[25:-4])  # Takes only the number of the condition
+        condition_idx = re.findall(r'\d+', condition_output)  # Extract experiment setup number from file name
+        condition_idx = condition_idx[0]  # Takes only the number of the condition
         all_results[condition_idx] = df
 
     return all_results
 
 
-def separate_experiment_setups(results, number_of_steps, number_of_simulation_runs=10):
+def separate_experiment_setups(results, number_of_steps=365, number_of_simulation_runs=10):
+    """
+    Reads experiment results and returns a dictionary of results with experiment setup as key.
+    """
     separated_results = {}
 
     for experiment, runs in results.items():
