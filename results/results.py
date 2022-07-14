@@ -7,12 +7,42 @@ import ast
 
 import matplotlib.pyplot as plt
 import seaborn as sns
+from tqdm import tqdm
 import pandas as pd
 
 from model.agents import *
 from experiments.experiment import *
 
 warnings.filterwarnings("ignore")
+
+
+def extract_from_json(item):
+    """
+    Extract the data from json file
+    :param item: matrix stored in the dataframe
+    :return: Dict
+    """
+    try:
+        json.loads(item)
+    except ValueError:
+        item = ast.literal_eval(re.search('({.+})', item).group(0))
+    else:
+        item = json.loads(item)
+    return item
+
+
+def create_results_df(results):
+    """
+    Returns a single dataframe of results from all experiment setups
+    @param results: Dict
+    @return df: DataFrame
+    """
+    columns = results['0'].columns.to_list()
+    df = pd.DataFrame(columns=columns)
+    for key in tqdm(results.keys()):
+        df = df.append(results[key])
+    df.reset_index(inplace=True, drop=True)
+    return df
 
 
 def extract_df_from_json(results, column='savings'):
@@ -36,6 +66,53 @@ def extract_df_from_json(results, column='savings'):
     df = df[1:]
     df['date'] = results['date']
     return df
+
+
+def calculate_key_matrices(df):
+    """" Returns total, total_residential, mean_residential , total_non_residential value for 'M1: realised_demand',
+    'M2: scheduled_demand', 'M3: shifted_load', 'M5: savings_on_ToD', and 'M6: energy_costs'.
+        @param df: DataFrame
+        @return result_matrices: Dict
+    """
+
+    # create a list of matrix
+    matrices = ['M1: realised_demand', 'M2: scheduled_demand', 'M3: shifted_load',
+                'M5: savings_on_ToD', 'M6: energy_costs']
+    # create a dictionary of columns header and its index
+    columns_dict = {}
+    index = 1
+    columns = df.columns.to_list()
+
+    for header in columns:
+        columns_dict[header] = index
+        index += 1
+
+    # get list of residential and non-residential members
+    m = df.loc[0, 'M1: realised_demand']
+    m = extract_from_json(item=m)
+    members = list(m.keys())
+    check = 'hh'
+    residential = [idx for idx in members if idx.lower().startswith(check.lower())]
+    non_residential = list(set(members) - set(residential))
+
+    print(f"calculating total, total_residential, mean_residential , total_non_residential value for {matrices}...")
+    result_matrices = {}
+    # iterate over results dataframe
+    for row in tqdm(df.itertuples(), total=len(df)):
+        result_dict = {}
+        # iterate over performance matrix
+        for matrix in matrices:
+            m = extract_from_json(item=row[columns_dict[matrix]])
+            # calculate important values from the matrix
+            result_dict[f"{matrix[:2]}_total"] = sum(m.values())
+            result_dict[f"{matrix[:2]}_total_residential"] = sum({k: m[k] for k in m.keys() & residential}.values())
+            result_dict[f"{matrix[:2]}_mean_residential"] = sum(
+                {k: m[k] for k in m.keys() & residential}.values()) / len(residential)
+            result_dict[f"{matrix[:2]}_total_non_residential"] = sum(
+                {k: m[k] for k in m.keys() & non_residential}.values())
+        # set index for dictionary
+        result_matrices[row[0]] = result_dict
+    return result_matrices
 
 
 def plot_community_consumption_and_generation(results):
@@ -96,6 +173,36 @@ def get_unique_levers_dict():
     return same_levers, unique_levers
 
 
+def get_lever_description(lever_value, lever):
+    """
+    Reads lever values and returns lever description
+    @param lever_value: Float
+    @param lever: String
+    @return: String, String
+    """
+    if lever == 'L1':
+        if lever_value == 0:
+            return 'Participation in demand response 0%', 'B'
+        elif lever_value == 0.5:
+            return 'Participation in demand response 50%', 'O'
+        elif lever_value == 0.75:
+            return 'Participation in demand response 75%', 'V'
+    elif lever == 'L2':
+        if lever_value == 0.1:
+            return 'Residential flexible demand 10%', 'B'
+        elif lever_value == 0.5:
+            return 'Residential flexible demand 50%', 'O'
+        elif lever_value == 1:
+            return 'Residential flexible demand 100%', 'V'
+    elif lever == 'L3':
+        if lever_value == 0.1:
+            return 'Non-residential flexible demand 10%', 'B'
+        elif lever_value == 0.45:
+            return 'Non-residential flexible demand 45%', 'O'
+        elif lever_value == 0.9:
+            return 'Non-residential flexible demand 90%', 'V'
+
+
 def get_lever_scenario(lever_value, lever):
     """Reads lever values and returns policy scenario for subplot titles"""
     if lever == 'L1':
@@ -115,10 +222,34 @@ def get_lever_scenario(lever_value, lever):
     elif lever == 'L3':
         if lever_value == 0.1:
             return 'B'
-        elif lever_value == 0.5:
+        elif lever_value == 0.45:
             return 'O'
         elif lever_value == 0.9:
             return 'V'
+
+
+def get_uncertainty_description(uncertainty_value, uncertainty_parameter):
+    """
+    Reads uncertainty value and parameter name to return scenario
+    @param uncertainty_value: Float
+    @param uncertainty_parameter: String
+    @return: String, String
+    """
+    if uncertainty_parameter == 'X1':
+        if uncertainty_value == 0.4:
+            return 'Availability of min. flexible demand 40%', 'N'
+        else:
+            return 'Availability of min. flexible demand 80%', 'O'
+    elif uncertainty_parameter == 'X2':
+        if uncertainty_value == 0.5:
+            return 'Availability of max.flexible demand 50%', 'N'
+        else:
+            return 'Availability of max. flexible demand 100%', 'O'
+    elif uncertainty_parameter == 'X3':
+        if uncertainty_value == 0.5:
+            return 'Accuracy of demand response schedule 50%', 'N'
+        else:
+            return 'Accuracy of demand response schedule 90%', 'O'
 
 
 def load_results_from_csv(ec_name=None):
@@ -160,3 +291,51 @@ def separate_experiment_setups(results, number_of_steps=365, number_of_simulatio
             separated_results[experiment].append(run_df)
 
     return separated_results
+
+
+def add_experiment_setup_details(results):
+    """
+    Adds experiment parameter information to the results dataframe
+    @param results: DataFrame
+    @return: Dict
+    """
+
+    experiment_test = Experiment()
+    experimental_conditions = experiment_test.prepare_experiment_setup()
+    model_inputs = experimental_conditions.columns.to_list()
+    print("starting the iteration through results...")
+    for key, row in tqdm(experimental_conditions.iterrows(), total=len(experimental_conditions)):
+        df = results[str(key)]
+        # assign input parameters to dataframe
+        policy_description = ''
+        policy = ''
+        scenario_description = ''
+        scenario = ''
+        for model_input in model_inputs:
+            df[model_input] = row[model_input]
+            # If input parameter is a lever, get the unique policy
+            if model_input in ['L1', 'L2', 'L3']:
+                lever_description, lever = get_lever_description(row[model_input], model_input)
+                policy = policy + f"{model_input} :{lever} "
+                policy_description = policy_description + f"{lever_description}\n"
+            # If input parameter is an uncertainty, get unique scenario
+            elif model_input in ['X1', 'X2', 'X3']:
+                uncertainty_description, uncertainty = get_uncertainty_description(row[model_input], model_input)
+                scenario = scenario + f"{model_input} :{uncertainty} "
+                scenario_description = scenario_description + f"{uncertainty_description}\n"
+        # assign experiment setup
+        df['experiment_setup'] = key
+        # assign scenario and policy
+        df['scenario_description'] = scenario_description
+        df['policy_description'] = policy_description
+        df['scenario'] = scenario
+        df['policy'] = policy
+        # rename column
+        df.rename(columns={'Unnamed: 0': 'step'}, inplace=True)
+        # set date column
+        df['date'] = pd.date_range(start='01-01-2021', freq='D', periods=365).strftime('%d-%m-%Y').to_list() * 10
+
+        # store the formatted dataframe in the dictionary
+        results[str(key)] = df
+
+    return results
