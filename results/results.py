@@ -260,7 +260,7 @@ def load_results_from_csv(ec_name=None):
     :return:
         results: dictionary with all results
     """
-    mypath = os.getcwd() + '/' + ec_name + '/'
+    mypath = os.getcwd() + '/' + 'data/raw/' + ec_name + '/'
     outputs = [f for f in listdir(mypath) if isfile(join(mypath, f))]
 
     all_results = {}
@@ -342,4 +342,69 @@ def add_experiment_setup_details(results):
         # store the formatted dataframe in the dictionary
         results[str(key)] = df
 
+    return results
+
+
+def combine_dictionaries(results):
+    """Combine results from different simulation runs into one dictionary"""
+    d = {}
+    for key in tqdm(results.keys()):
+        d = d | results[key].to_dict(orient='index')
+    return d
+
+
+def get_members_list(d):
+    """Returns a list of all members in the dictionary, residential and non-residential members"""
+    members = list(extract_from_json(d[0]['M1: realised_demand']).keys())
+    check = 'hh'
+    residential = [idx for idx in members if idx.lower().startswith(check.lower())]
+    non_residential = list(set(members) - set(residential))
+    check = 'hh1'
+    hh1 = [idx for idx in members if idx.lower().startswith(check.lower())]
+    check = 'hh2'
+    hh2 = [idx for idx in members if idx.lower().startswith(check.lower())]
+    check = 'hh3'
+    hh3 = [idx for idx in members if idx.lower().startswith(check.lower())]
+    residential_types = {'hh1': hh1, 'hh2': hh2, 'hh3': hh3}
+    return residential, non_residential, residential_types
+
+
+def extract_important_results(d):
+    """Extracts important results from the dictionary"""
+    columns = ['step', 'date', 'X1', 'X2', 'X3', 'L1', 'L2', 'L3', 'experiment_setup', 'scenario_description',
+               'policy_description', 'scenario', 'policy', 'M1_total', 'M1_total_residential', 'M1_mean_residential',
+               'M1_total_non_residential', 'M2_total', 'M2_total_residential', 'M2_mean_residential',
+               'M2_total_non_residential', 'M3_total', 'M3_total_residential', 'M3_mean_residential',
+               'M3_total_non_residential', 'M4_total', 'M5_total', 'M5_total_residential',
+               'M5_mean_residential', 'M5_total_non_residential', 'M6_total', 'M6_total_residential',
+               'M6_mean_residential', 'M6_total_non_residential']
+    # create list of residential and non-residential members
+    residential, non_residential, residential_types = get_members_list(d)
+    matrices = ['M1: realised_demand', 'M2: scheduled_demand', 'M3: shifted_load', 'M5: savings_on_ToD',
+                'M6: energy_costs']
+    for key in tqdm(d.keys()):
+        for matrix in matrices:
+            m = extract_from_json(d[key][matrix])
+            d[key][f"{matrix[:2]}_total"] = sum(m.values())
+            d[key][f"{matrix[:2]}_total_residential"] = sum({k: m[k] for k in m.keys() & residential}.values())
+            d[key][f"{matrix[:2]}_mean_residential"] = sum(
+                {k: m[k] for k in m.keys() & residential}.values()) / len(residential)
+            d[key][f"{matrix[:2]}_std_residential"] = np.std(list({k: m[k] for k in m.keys() & residential}.values()))
+            d[key][f"{matrix[:2]}_total_non_residential"] = sum(
+                {k: m[k] for k in m.keys() & non_residential}.values())
+            for residential_type in residential_types.keys():
+                d[key][f"{matrix[:2]}_mean_{residential_type}"] = sum(
+                    {k: m[k] for k in m.keys() & residential_types[residential_type]}.values()) / len(
+                    residential_types[residential_type])
+        d[key]["M4_total"] = extract_from_json(d[key]['M4: total_generation'])["<class 'model.agents.Solar'>"]
+        d[key] = {k: d[key][k] for k in d[key].keys() & columns}
+
+    return d
+
+
+def check_data_sanity(results):
+    """Check if data is sane"""
+    columns = results.select_dtypes(include=['float64']).columns.to_list()
+    for column in columns:
+        results.loc[results[column] < 0, column] = 0
     return results
