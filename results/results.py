@@ -408,3 +408,37 @@ def check_data_sanity(results):
     for column in columns:
         results.loc[results[column] < 0, column] = 0
     return results
+
+
+def aggregate_timeseries_data(results):
+    """"
+    Aggregate timeseries data
+    @param results: results dataframe
+    @return: aggregated dataframe
+    """
+    sum_c = ['M1_total_residential', 'M1_total_non_residential', 'M1_total',
+             'M2_total_residential', 'M2_total_non_residential', 'M2_total',
+             'M3_total_residential', 'M3_total_non_residential', 'M3_total',
+             'M4_total',
+             'M5_total_residential', 'M5_total_non_residential', 'M5_total',
+             'M6_total_residential', 'M6_total_non_residential', 'M6_total', ]
+    mean_c = ['M1_mean_residential',
+              'M2_mean_residential',
+              'M3_mean_residential',
+              'M5_mean_residential',
+              'M6_mean_residential', ]
+
+    experiment_setups = results['experiment_setup'].unique()
+    # Aggregate annual values
+    results_dict = {}
+    for experiment_setup in tqdm(experiment_setups):
+        replications = results[results['experiment_setup'] == experiment_setup]
+        mean_values = replications.groupby('date').mean()
+        sum_dict = mean_values[sum_c].sum().to_dict()
+        mean_dict = mean_values[mean_c].mean().to_dict()
+        results_dict[experiment_setup] = {**sum_dict, **mean_dict, 'experiment_setup': experiment_setup} | \
+                                         mean_values.loc[
+                                             '01-01-2021', ['X1', 'X2', 'X3', 'L1', 'L2', 'L3']].to_dict()
+
+    annual_df = pd.DataFrame.from_dict(results_dict, orient='index')
+    return annual_df
