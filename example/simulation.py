@@ -13,4 +13,4 @@ model = EnergyCommunity(agents_list=agents_list)
 results = model.run_simulation(steps=365, time_tracking=True)
 
 # Save results
-results.to_csv('../results/simulation_results.csv', index=False)
+results.to_csv('example_results/simulation_results.csv', index=False)
