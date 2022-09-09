@@ -1,6 +1,6 @@
 [Home](https://sonianmol.com/)
 
-# Exploring demand response opportunities in the Dutch energy communities
+# Exploring demand response opportunities in Dutch energy communities
 
 This is an agent-based simulation model created for evaluating the effect of demand response on the self-sufficiency and expenditure on electricity import for the modeled community.
 
