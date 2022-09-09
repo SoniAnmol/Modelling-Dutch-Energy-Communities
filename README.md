@@ -18,6 +18,8 @@ This model allows the user to model an energy community (including both resident
 
 This model was a part of the master's thesis project for  M.Sc. Engineering and Policy Analysis at TU Delft. This thesis project was done in collaboration with [Croonwolter&Dros](https://croonwolterendros.nl/).
 
+**The thesis report is available on the TU Delft repository and can be downloaded from this [link](https://repository.tudelft.nl/islandora/object/uuid:018c9e3f-9a64-469f-99a8-d9a0cf79308f).**
+
 
 ## Current state
 
