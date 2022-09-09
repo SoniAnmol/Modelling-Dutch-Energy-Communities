@@ -19,17 +19,32 @@ This model allows the user to model an energy community (including both resident
 This model was a part of the master's thesis project for  M.Sc. Engineering and Policy Analysis at TU Delft. This thesis project was done in collaboration with [Croonwolter&Dros](https://croonwolterendros.nl/).
 
 
-
 ## Current state
 
-This model under currently in development. This document will be updated shortly.
+This document is not complete and will be updated shortly.
 
-## General information
 
-This project is a thesis project done in collaboration with [Croonwolter&Dros](https://croonwolterendros.nl/). This
-model is primary focused on electric energy communities and can be extended to other energy sources. The model is used
-to evaluate demand response with in energy communities while ensuring fair distribution of cost and benefits among
-community members.
+## Model
+
+
+
+### System Relationship
+Following system relationship is captured in the model.
+<img src="images/Model-System-relationships.png">
+
+### XLRM Framework
+This model has adapted the following XLRM framework.
+<img src="images/Model-XLRM.png" alt="xlrm_diagram">
+
+## Community members
+This model has following demand profiles in the data bank. These demand profiles can be combined in different
+permutations and cobinations for creating community configurations.
+
+- Three demand profiles for residential community members
+- Four demand profiles for non-residential community members (office buildings)
+- Demand profile of a School (MBO)
+- Demand profile of an EV charging station with three slow chargers
+
 
 ## Repository structure
 
@@ -56,22 +71,4 @@ community members.
 ```
 
 
-## Model
-
-### System Relationship
-Following system relationship is captured in the model.
-<img src="images/Model-System-relationships.png">
-
-### XLRM Framework
-This model has adapted the following XLRM framework.
-<img src="images/Model-XLRM.png" alt="xlrm_diagram">
-
-## Community members
-This model has following demand profiles in the data bank. These demand profiles can be combined in different
-permutations and cobinations for creating community configurations.
-
-- Three demand profiles for residential community members
-- Four demand profiles for non-residential community members (office buildings)
-- Demand profile of a School (MBO)
-- Demand profile of an EV charging station with three slow chargers
 
