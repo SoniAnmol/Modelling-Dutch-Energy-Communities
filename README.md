@@ -4,11 +4,9 @@
 
 This is an agent-based simulation model created for evaluating the effect of demand response on the self-sufficiency and expenditure on electricity import for the modeled community.
 
-___
 ## Authors
 
 - [@SoniAnmol](https://www.github.com/SoniAnmol) - Anmol Soni
-___
 
 ## Background
 
