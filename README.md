@@ -1,14 +1,26 @@
 [Home](https://sonianmol.com/)
 
-# Exploring demand response in energy communities
+# Exploring demand response opportunities in the Dutch energy communities
 
-This project is the masters thesis for M.Sc. Engineering and Policy Analysis at TU Delft. In this project, an
-agent-based model of energy community is created using `mesa` library. This model serve as a testing ground for testing
-demand response policies on the modeled energy communities.
+This is an agent-based simulation model created for evaluating the effect of demand response on the self-sufficiency and expenditure on electricity import for the modeled community.
 
+___
 ## Authors
 
 - [@SoniAnmol](https://www.github.com/SoniAnmol) - Anmol Soni
+___
+
+## Background
+
+With an exponential increase in distributed renewable energy, optimisation of local electricity consumption is required to avoid congestion and overstressing in the distribution network. Recent literature suggests that Energy Communities with the implementation of smart-grid features can effectively optimise local consumption and generation of electricity. 
+
+Energy communities are bottoms-up citizen-driven initiatives involved in generating and consuming electricity from renewable sources (e.g. Solar PV, Wind farms). Traditionally these communities constitute only residential members who use electricity mostly in the morning and evening. Whereas, non-residential community members (such as schools, office buildings, etc.) located in the neighbourhood use electricity mostly during work hours. Thus, this complementary electricity consumption profile by residential and non-residential buildings can be utilised through demand response. Demand response is an incentive-based policy instrument that rewards consumers for regulating their electricity consumption based on its availability and pricing. Thus, demand response not only stabilises the local distribution network but also is a step toward an inclusive, affordable and sustainable energy system.
+
+This model allows the user to model an energy community (including both residential and non-residential members) and perform experiments to analyse the performance of a community using demand response. The current version of the model has a data bank of different residential and non-residential load profiles of Dutch buildings for the year 2021. This model uses the weather data from the year 2021 for the Netherlands. Additional datasets can be added to the model if required.
+
+This model was a part of the master's thesis project for  M.Sc. Engineering and Policy Analysis at TU Delft. This thesis project was done in collaboration with [Croonwolter&Dros](https://croonwolterendros.nl/).
+
+
 
 ## Current state
 
