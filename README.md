@@ -65,7 +65,7 @@ permutations and cobinations for creating unique community configurations.
 ├───images                       # contains figures and illustrations for the model
 │   └───UML                      # contains UML diagrams of the model
 ├───model                        # contains the model and agent scripts
-│   └───__pycache__
+│   
 └───results                      # contains the script for extracting results from the model outputs
 
 ```
