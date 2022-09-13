@@ -8,9 +8,10 @@ This is an agent-based simulation model created for evaluating the effect of dem
 
 1. [Background](#Background)
 2. [Model](#Model)
-3. [Repository structure](#Repository-structure)
-4. [Using the model](#Using-the-model)
-5. [Author](#Author)
+    2.1 [System Relationship](##System-Relationship)
+4. [Repository structure](#Repository-structure)
+5. [Using the model](#Using-the-model)
+6. [Author](#Author)
 
 
 ## Background
