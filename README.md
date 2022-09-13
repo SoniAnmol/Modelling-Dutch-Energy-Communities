@@ -8,12 +8,16 @@ This is an agent-based simulation model created for evaluating the effect of dem
 
 1. [Background](#Background)
 2. [Model](#Model)
-  - [System Relationship](#System-Relationship)
-  - [XLRM Framework](#XLRM-Framework)
-  - [Community Members](#Community-Members)
+      - [System Relationship](#System-Relationship)
+      - [XLRM Framework](#XLRM-Framework)
+      - [Community Members](#Community-Members)
 3. [Repository structure](#Repository-structure)
-4. [Using the model](#Using-the-model)
-5. [Author](#Author)
+4. [Using the model](#Using-the-model) 
+      - [Initialisation](#Initialisation)
+      - [Simulation](#Simulation)
+      - [Results](#Results)
+      - [Analysis](#Analysis)
+6. [Author](#Author)
 
 
 ## Background
