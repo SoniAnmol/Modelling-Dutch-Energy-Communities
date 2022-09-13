@@ -76,7 +76,8 @@ Clone this repository on your device/simulation machine. Detailed documentation 
 ### Initialisation
 
 This model requires an agent list to initialise an energy community. Currently, this model uses two real-life inspired energy community configurations. These communities only have residential community members therefore a hypothetical non-residential member is introduced to showcase the effect of complementary demand profile for demand response. Two existing community configurations are 'groene_mient' or 'gridflex_heeten'. These configurations are further described in `Modelling-Dutch-Energy-Communities/model/community_setup.py`. Agent list is a `list` of dictionaries 'dict' where each `dict` contains information about an agent.
-Following is an example of an agent list.
+
+Following is the example of an agent list.
 
 ```
 agent_list =   [{'member_type': MemberType.NON_RESIDENTIAL, # agent 1
@@ -102,13 +103,26 @@ agent_list =   [{'member_type': MemberType.NON_RESIDENTIAL, # agent 1
 
 The energy community can be initialised by `create_community_configuration` function and specifying either 'gridflex_heeten' or 'groene_mient' as the community name (`community_name`).
 
-`agents_list = create_community_configuration(community_name='gridflex_heeten')`
+```
+# Select the community to run the simulation 'groene_mient' or 'gridflex_heeten'
+agents_list = create_community_configuration(community_name='gridflex_heeten')
+
+# Setup model
+model = EnergyCommunity(agents_list=agents_list)
+```
 
 ### Simulation
 
+An example simulation with default policy lever and uncertainty values is shown in `Modelling-Dutch-Energy-Communities/example/simulation.py `. Following code snippet simulates the model for 365 time steps (i.e. one year) and stores the simulation results in `results`.
+
+```
+# Run simulation
+results = model.run_simulation(steps=365, time_tracking=True)
+```
+
 ### Results
 
-## Analysis
+### Analysis
 
 ## Author
 
