@@ -4,6 +4,21 @@
 
 This is an agent-based simulation model created for evaluating the effect of demand response on the self-sufficiency and expenditure on electricity import for the modeled community.
 
+## Contents
+
+# Table of Contents
+1. [Background](##Background)
+2. [Model](##Model)
+3. [Repository structure](##Repository structure)
+4. [Using the model](##Using the model)
+5. [Author](##Author)
+
+
+## Example
+## Example2
+## Third Example
+## [Fourth Example](http://www.fourthexample.com) 
+
 ## Background
 
 With an exponential increase in distributed renewable energy, optimisation of local electricity consumption and generation is required to avoid congestion and overstressing in the distribution network. Recent literature suggests that Energy Communities along with smart-grid applications can effectively optimise local consumption and generation of electricity and stablise the distribution network. 
@@ -15,10 +30,6 @@ This model allows the user to model an energy community (including both resident
 This model was a part of the master's thesis project for  M.Sc. Engineering and Policy Analysis at TU Delft. This thesis project was done in collaboration with [Croonwolter&Dros](https://croonwolterendros.nl/).
 
 **Note: The thesis report is available on the TU Delft repository and can be downloaded from this [link](https://repository.tudelft.nl/islandora/object/uuid:018c9e3f-9a64-469f-99a8-d9a0cf79308f).**
-
-## Current state
-
-This document is not complete and will be updated shortly.
 
 ## Model
 
@@ -36,7 +47,7 @@ This model has adapted the following XLRM framework for facilitating virtual exp
 
 <img src="images/Model-XLRM.png" alt="xlrm_diagram">
 
-## Community members
+### Community members
 
 This model has following demand profiles for simulating electricity consumption. These demand profiles can be combined in different
 permutations and cobinations for creating unique community configurations.
