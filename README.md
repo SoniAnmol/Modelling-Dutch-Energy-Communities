@@ -6,18 +6,12 @@ This is an agent-based simulation model created for evaluating the effect of dem
 
 ## Contents
 
-# Table of Contents
-1. [Background](##Background)
-2. [Model](##Model)
-3. [Repository structure](##Repository structure)
-4. [Using the model](##Using the model)
-5. [Author](##Author)
+1. [Background](#Background)
+2. [Model](#Model)
+3. [Repository structure](#Repository structure)
+4. [Using the model](#Using the model)
+5. [Author](#Author)
 
-
-## Example
-## Example2
-## Third Example
-## [Fourth Example](http://www.fourthexample.com) 
 
 ## Background
 
