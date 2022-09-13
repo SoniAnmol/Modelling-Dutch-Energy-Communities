@@ -136,6 +136,8 @@ This model reports results in form of a dataframe. An example of extracting and 
 
 ### Analysis
 
+For facilitating model-based decision-making, this model is simulated multiple times with different values of input parameters. Further details of performing these experiments are explained in `Modelling-Dutch-Energy-Communities/experiments/'. The outcome of these experiments is further analysed. Firstly, the most influential input parameters are identified using feature scoring. Secondly, the quantitative range of these influential parameters is identified through scenario discovery. Lastly, this information is used to formulate recommendations for the modelled community. An example of this analysis is shown in `Modelling-Dutch-Energy-Communities/results/plotting_results.ipynb`.
+
 ## Author
 
 - [@SoniAnmol](https://www.github.com/SoniAnmol) - Anmol Soni
