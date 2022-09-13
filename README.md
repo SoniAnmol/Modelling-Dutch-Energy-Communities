@@ -121,14 +121,14 @@ results = model.run_simulation(steps=365, time_tracking=True)
 ```
 Default values of input parameters are shown below:
 
-|Input parameter| Variable | Value | Description|
-|-------------|----|---|---------------------------------------------------------------------------------------------|
-|Uncertainty| X1 |0.30| Minimum percentage of flexible demand available for demand response on a single day (Social)|
-|Uncertainty| X2 |0.75| Maximum percentage of flexible demand available for demand response on a single day (Social)|
-|Uncertainty| X3 |0.80| Percentage accuracy of day-ahead generation projections from renewable assets (Technical) |
-|Lever| L3 |0.50| Percentage of members participating in the demand response program (Social) |
-|Lever| L3 |0.20| Percentage of flexible (shift-able)  demand for residential community members (Technical) |
-|Lever| L3 |0.30| Percentage of flexible (shift-able)  demand for non-residential community members (Technical) |
+|Input parameter | Value | Description|
+|-----------------|---|---------------------------------------------------------------------------------------------|
+|Uncertainty `X1` |0.30| Minimum percentage of flexible demand available for demand response on a single day (Social)|
+|Uncertainty `X2` |0.75| Maximum percentage of flexible demand available for demand response on a single day (Social)|
+|Uncertainty `X3` |0.80| Percentage accuracy of day-ahead generation projections from renewable assets (Technical) |
+|Lever `L1` |0.50| Percentage of members participating in the demand response program (Social) |
+|Lever `L2` |0.20| Percentage of flexible (shift-able)  demand for residential community members (Technical) |
+|Lever `L3` |0.30| Percentage of flexible (shift-able)  demand for non-residential community members (Technical) |
 
 ### Results
 
