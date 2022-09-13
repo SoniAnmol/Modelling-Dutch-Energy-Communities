@@ -75,8 +75,8 @@ Clone this repository on your device/simulation machine. Detailed documentation 
 
 ### Initialisation
 
-This model requires an agent list to initialise an energy community. Currently this model uses two real life inspired energy community configurations. These communities only have residential community member therefore a hypothetical non-residential member is introduce to showcase the effect of complementarty demand profile for demand response. Two existing community configurations are 'groene_mient' or 'gridflex_heeten'. These configurations are further described in `Modelling-Dutch-Energy-Communities/model/community_setup.py`. Agent list is a `list` of dictionaries 'dict' where each `dict` contains information of an agent.
-Following is an example of agent list.
+This model requires an agent list to initialise an energy community. Currently, this model uses two real-life inspired energy community configurations. These communities only have residential community members therefore a hypothetical non-residential member is introduced to showcase the effect of complementary demand profile for demand response. Two existing community configurations are 'groene_mient' or 'gridflex_heeten'. These configurations are further described in `Modelling-Dutch-Energy-Communities/model/community_setup.py`. Agent list is a `list` of dictionaries 'dict' where each `dict` contains information about an agent.
+Following is an example of an agent list.
 
 ```
 agent_list =   [{'member_type': MemberType.NON_RESIDENTIAL, # agent 1
@@ -99,6 +99,10 @@ agent_list =   [{'member_type': MemberType.NON_RESIDENTIAL, # agent 1
                                  'efficiency': 0.20,
                                  'price': 0.15}]}]
 ```
+
+The energy community can be initialised by `create_community_configuration` function and specifying either 'gridflex_heeten' or 'groene_mient' as the community name (`community_name`).
+
+`agents_list = create_community_configuration(community_name='gridflex_heeten')`
 
 ### Simulation
 
