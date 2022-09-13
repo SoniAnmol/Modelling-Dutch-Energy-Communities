@@ -137,6 +137,10 @@ uncertainties = {
                 "X3": 0.80,
                 # Percentage accuracy of day-ahead generation projections from renewable assets (Technical)}
 ```
+|-------------|----|---|---------------------------------------------------------------------------------------------|
+|Uncertainties| X1 |0.30| Minimum percentage of flexible demand available for demand response on a single day (Social)|
+|Uncertainties| X2 |0.75| Maximum percentage of flexible demand available for demand response on a single day (Social)|
+|Uncertainties| X3 |0.80| Percentage accuracy of day-ahead generation projections from renewable assets (Technical) |
 
 ### Results
 
