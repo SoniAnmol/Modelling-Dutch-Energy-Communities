@@ -8,10 +8,12 @@ This is an agent-based simulation model created for evaluating the effect of dem
 
 1. [Background](#Background)
 2. [Model](#Model)
-2.1 [System Relationship](#System-Relationship)
-4. [Repository structure](#Repository-structure)
-5. [Using the model](#Using-the-model)
-6. [Author](#Author)
+  - [System Relationship](#System-Relationship)
+  - [XLRM Framework](#XLRM-Framework)
+  - [Community Members](#Community-Members)
+3. [Repository structure](#Repository-structure)
+4. [Using the model](#Using-the-model)
+5. [Author](#Author)
 
 
 ## Background
@@ -42,7 +44,7 @@ This model has adapted the following XLRM framework for facilitating virtual exp
 
 <img src="images/Model-XLRM.png" alt="xlrm_diagram">
 
-### Community members
+### Community Members
 
 This model has following demand profiles for simulating electricity consumption. These demand profiles can be combined in different
 permutations and cobinations for creating unique community configurations.
