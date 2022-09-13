@@ -119,6 +119,24 @@ An example simulation with default policy lever and uncertainty values is shown 
 # Run simulation
 results = model.run_simulation(steps=365, time_tracking=True)
 ```
+Default values of input parameters are shown below:
+```
+levers =       {
+                "L1": 0.5,
+                # Percentage of members participating in the demand response program (Social)
+                "L2": 0.2,
+                # Percentage of flexible (shift-able)  demand for residential community members (Technical)
+                "L3": 0.3,
+                # Percentage of flexible (shift-able)  demand for non-residential community members (Technical)}
+
+uncertainties = {
+                "X1": 0.30,
+                # Minimum percentage of flexible demand available for demand response on a single day (Social)
+                "X2": 0.75,
+                # Maximum percentage of flexible demand available for demand response on a single day (Social)
+                "X3": 0.80,
+                # Percentage accuracy of day-ahead generation projections from renewable assets (Technical)}
+```
 
 ### Results
 
