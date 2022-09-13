@@ -6,15 +6,15 @@ This is an agent-based simulation model created for evaluating the effect of dem
 
 ## Background
 
-With an exponential increase in distributed renewable energy, optimisation of local electricity consumption is required to avoid congestion and overstressing in the distribution network. Recent literature suggests that Energy Communities with the implementation of smart-grid features can effectively optimise local consumption and generation of electricity. 
+With an exponential increase in distributed renewable energy, optimisation of local electricity consumption and generation is required to avoid congestion and overstressing in the distribution network. Recent literature suggests that Energy Communities along with smart-grid applications can effectively optimise local consumption and generation of electricity and stablise the distribution network. 
 
-Energy communities are bottoms-up citizen-driven initiatives involved in generating and consuming electricity from renewable sources (e.g. Solar PV, Wind farms). Traditionally these communities constitute only residential members who use electricity mostly in the morning and evening. Whereas, non-residential community members (such as schools, office buildings, etc.) located in the neighbourhood use electricity mostly during work hours. Thus, this complementary electricity consumption profile by residential and non-residential buildings can be utilised through demand response. Demand response is an incentive-based policy instrument that rewards consumers for regulating their electricity consumption based on its availability and pricing. Thus, demand response not only stabilises the local distribution network but also is a step toward an inclusive, affordable and sustainable energy system.
+Energy communities are bottoms-up citizen-driven initiatives involved in generating and consuming electricity from renewable sources (e.g. Solar PV, Wind farms). Traditionally these communities constitute only residential members using electricity mostly in the morning and evening. Whereas, non-residential community members (such as schools, office buildings, etc.) located in the neighbourhood use electricity mostly during the work hours. Thus, this complementary electricity consumption profile by residential and non-residential buildings can be utilised through demand response. Demand response is an incentive-based policy instrument that rewards consumers for regulating their electricity consumption based on the availability and pricing. Thus, demand response not only stabilises the local distribution network but also is a step toward an inclusive, affordable and sustainable energy system.
 
-This model allows the user to model an energy community (including both residential and non-residential members) and perform experiments to analyse the performance of a community using demand response. The current version of the model has a data bank of different residential and non-residential load profiles of Dutch buildings for the year 2021. Additional datasets can be added to the model if required.
+This model allows the user to model an energy community (including both residential and non-residential members) and perform experiments to analyse the performance of a community using demand response. The current version of the model has electricity consumption data of different residential and non-residential Dutch buildings for the year 2021. Additional datasets from other locations can be added to the model if required.
 
 This model was a part of the master's thesis project for  M.Sc. Engineering and Policy Analysis at TU Delft. This thesis project was done in collaboration with [Croonwolter&Dros](https://croonwolterendros.nl/).
 
-**The thesis report is available on the TU Delft repository and can be downloaded from this [link](https://repository.tudelft.nl/islandora/object/uuid:018c9e3f-9a64-469f-99a8-d9a0cf79308f).**
+**Note: The thesis report is available on the TU Delft repository and can be downloaded from this [link](https://repository.tudelft.nl/islandora/object/uuid:018c9e3f-9a64-469f-99a8-d9a0cf79308f).**
 
 ## Current state
 
@@ -74,6 +74,29 @@ permutations and cobinations for creating unique community configurations.
 Clone this repository on your device/simulation machine. Detailed documentation is available [here](https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository).
 
 ### Initialisation
+
+This model requires an agent list to initialise an energy community. Currently this model uses two real life inspired energy community configurations. These communities only have residential community member therefore a hypothetical non-residential member is introduce to showcase the effect of complementarty demand profile for demand response. Two existing community configurations are 'groene_mient' or 'gridflex_heeten'. These configurations are further described in `Modelling-Dutch-Energy-Communities/model/community_setup.py`. Agent list is a `list` of dictionaries 'dict' where each `dict` contains information of an agent.
+Following is an example of agent list.
+
+`agent_list =   [{'member_type': MemberType.NON_RESIDENTIAL, # agent 1
+                 'member_name': 'Office 1',
+                 'agent_type': AgentType.PROSUMER,
+                 'demand_flexibility': 0.20,
+                 'asset_list': [{'agent_type': Asset,  # generation asset
+                                 'asset_type': Solar,
+                                 'capacity': 100,
+                                 'efficiency': 0.20,
+                                 'price': 0.15}]},
+                # agent 2
+                {'member_type': MemberType.NON_RESIDENTIAL, 
+                 'member_name': 'EV_charging_station',
+                 'agent_type': AgentType.CONSUMER,
+                 'demand_flexibility': 0.20,
+                 'asset_list': [{'agent_type': Asset,  # generation asset
+                                 'asset_type': Solar,
+                                 'capacity': 400,
+                                 'efficiency': 0.20,
+                                 'price': 0.15}]}]`
 
 ### Simulation
 
