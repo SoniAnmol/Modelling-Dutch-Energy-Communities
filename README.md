@@ -38,8 +38,8 @@ This model has adapted the following XLRM framework for facilitating virtual exp
 
 ## Community members
 
-This model has following demand profiles in the data bank. These demand profiles can be combined in different
-permutations and cobinations for creating community configurations.
+This model has following demand profiles for simulating electricity consumption. These demand profiles can be combined in different
+permutations and cobinations for creating unique community configurations.
 
 - Three demand profiles for residential community members
 - Four demand profiles for non-residential community members (office buildings)
@@ -70,6 +70,8 @@ permutations and cobinations for creating community configurations.
 
 ```
 ## Using the model
+
+Clone this repository on your device/simulation machine. Detailed documentation is available [here](https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository).
 
 ### Initialisation
 
